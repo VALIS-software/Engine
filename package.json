@@ -2,7 +2,7 @@
   "name": "engine",
   "version": "1.0.0",
   "description": "WebGL graphics, animation and UI engine",
-  "files": [ "./dist/**/*", "./src/**/*" ],
+  "files": [ "dist/**/*", "src/**/*" ],
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
