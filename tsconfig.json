@@ -1,0 +1,16 @@
+{
+    "compilerOptions": {
+        "outDir": "dist",
+        "target": "es5",
+        "declaration": true,
+        "downlevelIteration": true,
+        "noImplicitAny": true,
+        "strictNullChecks": false,
+        "lib": [
+            "es2015",
+            "DOM",
+            "ScriptHost"
+        ],
+    },
+    "include": [ "./src/**/*" ]
+}
