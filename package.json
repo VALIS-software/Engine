@@ -2,7 +2,6 @@
   "name": "engine",
   "version": "1.0.0",
   "description": "WebGL graphics, animation and UI engine",
-  "files": [ "dist/**/*", "src/**/*" ],
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -20,6 +19,7 @@
     "gputext": "git+https://github.com/VALIS-software/GPUText.git"
   },
   "devDependencies": {
-    "@types/node": "^9.6.31"
+    "@types/node": "^9.6.31",
+    "typescript": "^2.9.1"
   }
 }
