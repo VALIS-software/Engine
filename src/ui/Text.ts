@@ -1,4 +1,4 @@
-import GPUText, { GlyphLayout, GPUTextFont } from "gputext/GPUText";
+import GPUText, { GlyphLayout, GPUTextFont } from "gputext";
 import { AttributeLayout, BufferUsageHint, ColorSpaceConversion, GPUDevice, GPUBuffer, GPUTexture, AttributeType, TextureDataType, TextureFormat, TextureMagFilter, TextureMinFilter, TextureUsageHint, TextureWrapMode } from "../rendering/GPUDevice";
 import { BlendMode, DrawContext, DrawMode } from "../rendering/Renderer";
 import { Object2D } from "./Object2D";

@@ -1,4 +1,4 @@
-import { AttributeLayout, BufferDescriptor, GPUDevice, GPUBuffer, GPUIndexBuffer, GPUProgram, GPUTexture, GPUVertexState, AttributeType, TextureDescriptor } from "engine/rendering/GPUDevice";
+import { AttributeLayout, BufferDescriptor, GPUDevice, GPUBuffer, GPUIndexBuffer, GPUProgram, GPUTexture, GPUVertexState, AttributeType, TextureDescriptor } from "./rendering/GPUDevice";
 
 export class SharedResources {
 
