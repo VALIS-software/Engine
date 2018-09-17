@@ -2,6 +2,8 @@
   "name": "engine",
   "version": "1.0.0",
   "description": "WebGL graphics, animation and UI engine. This is a pure TypeScript module",
+  "main": "Engine.js",
+  "types": "Engine.d.ts",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "tsc && cp-cli _built/ ./"
