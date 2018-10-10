@@ -35,10 +35,14 @@ export class GPUDevice {
 		vertexArrayObjects: boolean,
 		instancing: boolean,
 		availableTextureUnits: number,
+		floatTextures: boolean,
+		floatTexturesLinearFiltering: boolean,
 	} = {
 		vertexArrayObjects: false,
 		instancing: false,
 		availableTextureUnits: 0,
+		floatTextures: false,
+		floatTexturesLinearFiltering: false,
 	}
 
 	readonly name: string;
@@ -81,6 +85,9 @@ export class GPUDevice {
 		this.capabilities.vertexArrayObjects = this.extVao != null;
 		this.capabilities.instancing = this.extInstanced != null;
 		this.capabilities.availableTextureUnits = availableTextureUnits;
+
+		this.capabilities.floatTextures = gl.getExtension('OES_texture_float') != null;
+		this.capabilities.floatTexturesLinearFiltering = gl.getExtension('OES_texture_float_linear') != null;
 	}
 
 	createBuffer(bufferDescriptor: BufferDescriptor) {
@@ -731,7 +738,6 @@ export enum TextureDataType {
 	UNSIGNED_SHORT_4_4_4_4 = WebGLRenderingContext.UNSIGNED_SHORT_4_4_4_4,
 	UNSIGNED_SHORT_5_5_5_1 = WebGLRenderingContext.UNSIGNED_SHORT_5_5_5_1,
 	FLOAT = WebGLRenderingContext.FLOAT,
-	// Extension HALF_FLOAT = 
 }
 
 export enum TextureFormat {
