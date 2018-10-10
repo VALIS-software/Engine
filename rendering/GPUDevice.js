@@ -35,6 +35,8 @@ var GPUDevice = /** @class */ (function () {
             vertexArrayObjects: false,
             instancing: false,
             availableTextureUnits: 0,
+            floatTextures: false,
+            floatTexturesLinearFiltering: false,
         };
         this.vertexStateIds = new IdManager(true);
         this.programIds = new IdManager(true);
@@ -57,6 +59,8 @@ var GPUDevice = /** @class */ (function () {
         this.capabilities.vertexArrayObjects = this.extVao != null;
         this.capabilities.instancing = this.extInstanced != null;
         this.capabilities.availableTextureUnits = availableTextureUnits;
+        this.capabilities.floatTextures = gl.getExtension('OES_texture_float') != null;
+        this.capabilities.floatTexturesLinearFiltering = gl.getExtension('OES_texture_float_linear') != null;
     }
     Object.defineProperty(GPUDevice.prototype, "programCount", {
         get: function () { return this._programCount; },
@@ -535,7 +539,6 @@ var TextureDataType;
     TextureDataType[TextureDataType["UNSIGNED_SHORT_4_4_4_4"] = WebGLRenderingContext.UNSIGNED_SHORT_4_4_4_4] = "UNSIGNED_SHORT_4_4_4_4";
     TextureDataType[TextureDataType["UNSIGNED_SHORT_5_5_5_1"] = WebGLRenderingContext.UNSIGNED_SHORT_5_5_5_1] = "UNSIGNED_SHORT_5_5_5_1";
     TextureDataType[TextureDataType["FLOAT"] = WebGLRenderingContext.FLOAT] = "FLOAT";
-    // Extension HALF_FLOAT = 
 })(TextureDataType = exports.TextureDataType || (exports.TextureDataType = {}));
 var TextureFormat;
 (function (TextureFormat) {

@@ -29,8 +29,8 @@ var Node = /** @class */ (function () {
         return this.children.delete(child);
     };
     Node.prototype.applyTransformToSubNodes = function (root) {
-        var e_1, _a;
         if (root === void 0) { root = true; }
+        var e_1, _a;
         try {
             for (var _b = __values(this.children), _c = _b.next(); !_c.done; _c = _b.next()) {
                 var child = _c.value;

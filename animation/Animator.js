@@ -128,8 +128,8 @@ var Animator = /** @class */ (function () {
         }
     };
     Animator.frame = function (time_s) {
-        var e_3, _a, e_4, _b, e_5, _c;
         if (time_s === void 0) { time_s = window.performance.now() / 1000; }
+        var e_3, _a, e_4, _b, e_5, _c;
         var steppedAnimationCount = 0;
         try {
             for (var _d = __values(Animator.active), _e = _d.next(); !_e.done; _e = _d.next()) {

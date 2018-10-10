@@ -30,6 +30,8 @@ export declare class GPUDevice {
         vertexArrayObjects: boolean;
         instancing: boolean;
         availableTextureUnits: number;
+        floatTextures: boolean;
+        floatTexturesLinearFiltering: boolean;
     };
     readonly name: string;
     protected gl: WebGLRenderingContext;

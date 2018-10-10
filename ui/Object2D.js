@@ -240,8 +240,8 @@ var Object2D = /** @class */ (function (_super) {
         this.eventEmitter.emit(event, args);
     };
     Object2D.prototype.applyTransformToSubNodes = function (root) {
-        var e_2, _a;
         if (root === void 0) { root = true; }
+        var e_2, _a;
         if (root && this.worldTransformNeedsUpdate) {
             this.computeLayout(0, 0);
             this.applyWorldTransform(null);
