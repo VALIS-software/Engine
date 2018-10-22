@@ -2,11 +2,11 @@
   "name": "engine",
   "version": "1.0.0",
   "description": "WebGL graphics, animation and UI engine. This is a pure TypeScript module",
-  "main": "Engine.js",
-  "types": "Engine.d.ts",
+  "main": "index.js",
+  "types": "index.d.ts",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "tsc && cp-cli _built/ ./"
+    "build": "cti src && tsc && cp-cli _built/ ./"
   },
   "repository": {
     "type": "git",
@@ -24,6 +24,7 @@
   "devDependencies": {
     "@types/node": "^9.6.31",
     "cp-cli": "^1.1.2",
-    "typescript": "^2.9.1"
+    "typescript": "^2.9.1",
+    "create-ts-index": "1.0.x"
   }
 }
