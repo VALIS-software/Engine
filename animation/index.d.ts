@@ -1,1 +1,1 @@
-export * from './Animator';
+export * from './AnimatorInstance';

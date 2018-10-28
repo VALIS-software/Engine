@@ -12,7 +12,7 @@
  * - Implement traditional easing via step functions
  * - For fixed time springs we can implement a fix/physical blended version of springStep, that lerps to 0 as t -> duration
  */
-export class Animator {
+export class AnimatorInstance {
 
     protected active = new Set<{
         object: any,
@@ -322,4 +322,4 @@ type AnimationState = {
     t0: number
 }
 
-export default Animator;
+export default AnimatorInstance;
