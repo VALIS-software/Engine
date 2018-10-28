@@ -13,7 +13,7 @@
  * - For fixed time springs we can implement a fix/physical blended version of springStep, that lerps to 0 as t -> duration
  */
 export declare class Animator {
-    protected static active: Set<{
+    protected active: Set<{
         object: any;
         animatingFields: {
             [key: string]: {
@@ -25,50 +25,50 @@ export declare class Animator {
             };
         };
     }>;
-    protected static stepCallbacks: Set<(steppedAnimationCount: number) => void>;
-    protected static animationCompleteCallbacks: Set<{
+    protected stepCallbacks: Set<(steppedAnimationCount: number) => void>;
+    protected animationCompleteCallbacks: Set<{
         callback: (object: any) => void;
         object: any;
         field: string;
         once: boolean;
     }>;
-    static springTo(object: any, fieldTargets: {
+    springTo(object: any, fieldTargets: {
         [key: string]: number;
     }, criticalTension: number, velocity?: number): void;
-    static springTo(object: any, fieldTargets: {
+    springTo(object: any, fieldTargets: {
         [key: string]: number;
     }, parameters: {
         tension: number;
         friction: number;
     }, velocity?: number): void;
-    static spring(object: any, fieldTargets: {
+    spring(object: any, fieldTargets: {
         [key: string]: number;
     }, criticalTension: number, velocity?: number): void;
-    static spring(object: any, fieldTargets: {
+    spring(object: any, fieldTargets: {
         [key: string]: number;
     }, parameters: {
         tension: number;
         friction: number;
     }, velocity?: number): void;
-    static animation<T>(object: any, fieldTargets: {
+    animation<T>(object: any, fieldTargets: {
         [key: string]: number;
     }, step: (dt_ms: number, state: AnimationState, parameters: T) => void, parameters: T, stopOnComplete: boolean, velocity?: number): void;
-    static stop(object: any, fields?: Array<string> | {
+    stop(object: any, fields?: Array<string> | {
         [key: string]: number;
     }): void;
-    static frame(time_s?: number): void;
-    static activeAnimationCount(): number;
-    static addAnimationCompleteCallback<T>(object: T, field: string, callback: (object: T) => void, once?: boolean): void;
-    static removeAnimationCompleteCallbacks<T>(object: T, field: string, callback: (object: T) => void): boolean;
+    frame(time_s?: number): void;
+    activeAnimationCount(): number;
+    addAnimationCompleteCallback<T>(object: T, field: string, callback: (object: T) => void, once?: boolean): void;
+    removeAnimationCompleteCallbacks<T>(object: T, field: string, callback: (object: T) => void): boolean;
     /**
      * It's often useful to be able to execute code straight after the global animation step has finished
      */
-    static addStepCompleteCallback(callback: (steppedAnimationCount: number) => void): void;
-    static removeStepCompleteCallback(callback: (steppedAnimationCount: number) => void): boolean;
-    private static fieldComplete;
-    private static stringStep;
-    private static getActive;
-    private static removeActive;
+    addStepCompleteCallback(callback: (steppedAnimationCount: number) => void): void;
+    removeStepCompleteCallback(callback: (steppedAnimationCount: number) => void): boolean;
+    private fieldComplete;
+    private stringStep;
+    private getActive;
+    private removeActive;
 }
 declare type AnimationState = {
     x: number;
