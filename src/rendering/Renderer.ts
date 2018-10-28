@@ -258,8 +258,8 @@ export class Renderer {
 
 			// clear depth for main pass
 			if (pass.clearOptions.clearDepth != null) {
-				clearFlags |= gl.DEPTH_BUFFER_BIT;
 				gl.clearDepth(pass.clearOptions.clearDepth);
+				gl.clear(gl.DEPTH_BUFFER_BIT);
 			}
 		}
 
