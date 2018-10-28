@@ -14,15 +14,15 @@
  */
 export class AnimatorInstance {
 
-    protected active = new Set<{
-        object: any,
-        animatingFields: { [key: string]: {
+   protected active = new Map<any, {
+        // active field animations
+        [field: string]: {
             state: AnimationState,
             target: number,
             step: (dt_ms: number, state: AnimationState, parameters: any) => void,
             parameters: any,
             stopOnComplete: boolean,
-        } },
+        },
     }>();
 
     protected stepCallbacks = new Set<(steppedAnimationCount: number) => void>();
@@ -74,21 +74,18 @@ export class AnimatorInstance {
     ) {
         let t_s = window.performance.now() / 1000;
 
-        let entry = this.getActive(object);
-        if (entry == null) {
-            entry = {
-                object: object,
-                animatingFields: {},
-            }
-            this.active.add(entry);
-        }
+        let activeFields = this.active.get(object);
+        if (activeFields == null) {
+            activeFields = {};
+            this.active.set(object, activeFields);
+        } 
 
         let fields = Object.keys(fieldTargets);
         for (let field of fields) {
             let target = fieldTargets[field];
             let current = object[field];
 
-            let animation = entry.animatingFields[field];
+            let animation = activeFields[field];
             // create or update dynamic motion fields
             if (animation == null) {
                 animation = {
@@ -108,7 +105,7 @@ export class AnimatorInstance {
 
                     stopOnComplete: stopOnComplete,
                 };
-                entry.animatingFields[field] = animation;
+                activeFields[field] = animation;
             } else {
                 // animation is already active, update state
                 animation.state.x = target - current;
@@ -123,21 +120,20 @@ export class AnimatorInstance {
     
     public stop(object: any, fields?: Array<string> | { [key: string]: number }) {
         if (fields == null) {
-            this.removeActive(object);
+            this.active.delete(object);
         } else {
-            let entry = this.getActive(object);
-
-            if (entry === null) return;
+            let activeFields = this.active.get(object);
+            if (activeFields == null) return;
             
             let fieldNames = Array.isArray(fields) ? fields : Object.keys(fields);
 
             for (let field of fieldNames) {
-                delete entry.animatingFields[field];
+                delete activeFields[field];
             }
 
             // if there's no field animations left then remove the entry
-            if (Object.keys(entry.animatingFields).length === 0) {
-                this.active.delete(entry);
+            if (Object.keys(activeFields).length === 0) {
+                this.active.delete(object);
             }
         }
     }
@@ -146,11 +142,13 @@ export class AnimatorInstance {
         let steppedAnimationCount = 0;
 
         for (let entry of this.active) {
-            let object = entry.object;
+            let object = entry[0];
+            let activeFields = entry[1];
 
-            let animatingFields = Object.keys(entry.animatingFields);
-            for (let field of animatingFields) {
-                let animation = entry.animatingFields[field];
+            let activeFieldNames = Object.keys(activeFields);
+
+            for (let field of activeFieldNames) {
+                let animation = activeFields[field];
                 
                 animation.state.x = animation.target - object[field];
                 animation.step(time_s, animation.state, animation.parameters);
@@ -164,7 +162,7 @@ export class AnimatorInstance {
 
                 // @! magic number: can we derive a condition that's linked to user-known properties
                 if (animation.stopOnComplete && totalEnergy < 0.000001) {
-                    delete entry.animatingFields[field];
+                    delete activeFields[field];
                     object[field] = animation.target;
 
                     this.fieldComplete(object, field);
@@ -172,8 +170,8 @@ export class AnimatorInstance {
             }
 
             // if there's no field animations left then remove the entry
-            if (Object.keys(entry.animatingFields).length === 0) {
-                this.active.delete(entry);
+            if (Object.keys(activeFields).length === 0) {
+                this.active.delete(object);
             }
         }
 
@@ -293,22 +291,6 @@ export class AnimatorInstance {
         }
 
         state.pe = 0.5 * k * state.x * state.x;
-    }
-
-    private getActive(object: any) {
-        for (let entry of this.active) {
-            if (object === entry.object) return entry;
-        }
-        return null;
-    }
-
-    private removeActive(object: any) {
-        for (let entry of this.active) {
-            if (entry.object === object) {
-                this.active.delete(entry);
-                return;
-            }
-        }
     }
 
 }
