@@ -14,7 +14,7 @@
  */
 export class Animator {
 
-    protected static active = new Set<{
+    protected active = new Set<{
         object: any,
         animatingFields: { [key: string]: {
             state: AnimationState,
@@ -25,9 +25,9 @@ export class Animator {
         } },
     }>();
 
-    protected static stepCallbacks = new Set<(steppedAnimationCount: number) => void>();
+    protected stepCallbacks = new Set<(steppedAnimationCount: number) => void>();
 
-    protected static animationCompleteCallbacks = new Set<{
+    protected animationCompleteCallbacks = new Set<{
         callback: (object: any) => void,
         object: any,
         field: string,
@@ -40,31 +40,31 @@ export class Animator {
         - Duration to reach this state
         - [Some sort of normalized wobblyness control], 0 = no energy loss, 0.5 = critical, 1 = ?
     */
-    public static springTo(object: any, fieldTargets: { [key: string]: number }, criticalTension: number, velocity?: number): void;
-    public static springTo(object: any, fieldTargets: { [key: string]: number }, parameters: { tension: number, friction: number }, velocity?: number): void;
-    public static springTo(object: any, fieldTargets: { [key: string]: number }, parameters: any, velocity?: number): void {
+    public springTo(object: any, fieldTargets: { [key: string]: number }, criticalTension: number, velocity?: number): void;
+    public springTo(object: any, fieldTargets: { [key: string]: number }, parameters: { tension: number, friction: number }, velocity?: number): void;
+    public springTo(object: any, fieldTargets: { [key: string]: number }, parameters: any, velocity?: number): void {
         // handle multiple types of spring parameters
         let springParameters = parameters instanceof Object ? parameters : {
             tension: parameters,
             friction: Math.sqrt(parameters) * 2
         };
 
-        Animator.animation(object, fieldTargets, Animator.stringStep, springParameters, true, velocity);
+        this.animation(object, fieldTargets, this.stringStep, springParameters, true, velocity);
     }
 
-    public static spring(object: any, fieldTargets: { [key: string]: number }, criticalTension: number, velocity?: number): void;
-    public static spring(object: any, fieldTargets: { [key: string]: number }, parameters: { tension: number, friction: number }, velocity?: number): void;
-    public static spring(object: any, fieldTargets: { [key: string]: number }, parameters: any, velocity?: number): void {
+    public spring(object: any, fieldTargets: { [key: string]: number }, criticalTension: number, velocity?: number): void;
+    public spring(object: any, fieldTargets: { [key: string]: number }, parameters: { tension: number, friction: number }, velocity?: number): void;
+    public spring(object: any, fieldTargets: { [key: string]: number }, parameters: any, velocity?: number): void {
         // handle multiple types of spring parameters
         let springParameters = parameters instanceof Object ? parameters : {
             tension: parameters,
             friction: Math.sqrt(parameters) * 2
         };
 
-        Animator.animation(object, fieldTargets, Animator.stringStep, springParameters, false, velocity);
+        this.animation(object, fieldTargets, this.stringStep, springParameters, false, velocity);
     }
 
-    public static animation<T>(
+    public animation<T>(
         object: any,
         fieldTargets: { [key: string]: number },
         step: (dt_ms: number, state: AnimationState, parameters: T) => void,
@@ -74,13 +74,13 @@ export class Animator {
     ) {
         let t_s = window.performance.now() / 1000;
 
-        let entry = Animator.getActive(object);
+        let entry = this.getActive(object);
         if (entry == null) {
             entry = {
                 object: object,
                 animatingFields: {},
             }
-            Animator.active.add(entry);
+            this.active.add(entry);
         }
 
         let fields = Object.keys(fieldTargets);
@@ -121,11 +121,11 @@ export class Animator {
         }
     }
     
-    public static stop(object: any, fields?: Array<string> | { [key: string]: number }) {
+    public stop(object: any, fields?: Array<string> | { [key: string]: number }) {
         if (fields == null) {
-            Animator.removeActive(object);
+            this.removeActive(object);
         } else {
-            let entry = Animator.getActive(object);
+            let entry = this.getActive(object);
 
             if (entry === null) return;
             
@@ -137,15 +137,15 @@ export class Animator {
 
             // if there's no field animations left then remove the entry
             if (Object.keys(entry.animatingFields).length === 0) {
-                Animator.active.delete(entry);
+                this.active.delete(entry);
             }
         }
     }
 
-    public static frame(time_s: number = window.performance.now() / 1000) {
+    public frame(time_s: number = window.performance.now() / 1000) {
         let steppedAnimationCount = 0;
 
-        for (let entry of Animator.active) {
+        for (let entry of this.active) {
             let object = entry.object;
 
             let animatingFields = Object.keys(entry.animatingFields);
@@ -167,28 +167,28 @@ export class Animator {
                     delete entry.animatingFields[field];
                     object[field] = animation.target;
 
-                    Animator.fieldComplete(object, field);
+                    this.fieldComplete(object, field);
                 }
             }
 
             // if there's no field animations left then remove the entry
             if (Object.keys(entry.animatingFields).length === 0) {
-                Animator.active.delete(entry);
+                this.active.delete(entry);
             }
         }
 
         // execute post-step callbacks
-        for (let callback of Animator.stepCallbacks) {
+        for (let callback of this.stepCallbacks) {
             callback(steppedAnimationCount);
         }
     }
 
-    public static activeAnimationCount(): number {
-        return Animator.active.size;
+    public activeAnimationCount(): number {
+        return this.active.size;
     }
 
-    public static addAnimationCompleteCallback<T>(object: T, field: string, callback: (object: T) => void, once: boolean = true) {
-        Animator.animationCompleteCallbacks.add({
+    public addAnimationCompleteCallback<T>(object: T, field: string, callback: (object: T) => void, once: boolean = true) {
+        this.animationCompleteCallbacks.add({
             callback: callback,
             object: object,
             field: field,
@@ -196,16 +196,16 @@ export class Animator {
         });
     }
 
-    public static removeAnimationCompleteCallbacks<T>(object: T, field: string, callback: (object: T) => void) {
+    public removeAnimationCompleteCallbacks<T>(object: T, field: string, callback: (object: T) => void) {
         let removed = 0;
 
-        for (let e of Animator.animationCompleteCallbacks) {
+        for (let e of this.animationCompleteCallbacks) {
             if (
                 e.callback === callback &&
                 e.field === field &&
                 e.object === object
             ) {
-                Animator.animationCompleteCallbacks.delete(e);
+                this.animationCompleteCallbacks.delete(e);
                 removed++;
             }
         }
@@ -216,27 +216,27 @@ export class Animator {
     /**
      * It's often useful to be able to execute code straight after the global animation step has finished
      */
-    public static addStepCompleteCallback(callback: (steppedAnimationCount: number) => void) {
-        Animator.stepCallbacks.add(callback);
+    public addStepCompleteCallback(callback: (steppedAnimationCount: number) => void) {
+        this.stepCallbacks.add(callback);
     }
 
-    public static removeStepCompleteCallback(callback: (steppedAnimationCount: number) => void) {
-        return Animator.stepCallbacks.delete(callback);
+    public removeStepCompleteCallback(callback: (steppedAnimationCount: number) => void) {
+        return this.stepCallbacks.delete(callback);
     }
 
-    private static fieldComplete(object: any, field: string) {
+    private fieldComplete(object: any, field: string) {
         for (let e of this.animationCompleteCallbacks) {
             if (e.object === object && e.field === field) {
                 // delete the callback if set to 'once'
                 if (e.once) {
-                    Animator.animationCompleteCallbacks.delete(e);
+                    this.animationCompleteCallbacks.delete(e);
                 }
                 e.callback(object);
             }
         }
     }
 
-    private static stringStep(t_s: number, state: AnimationState, parameters: {
+    private stringStep(t_s: number, state: AnimationState, parameters: {
         tension: number,
         friction: number,
     }) {
@@ -295,17 +295,17 @@ export class Animator {
         state.pe = 0.5 * k * state.x * state.x;
     }
 
-    private static getActive(object: any) {
-        for (let entry of Animator.active) {
+    private getActive(object: any) {
+        for (let entry of this.active) {
             if (object === entry.object) return entry;
         }
         return null;
     }
 
-    private static removeActive(object: any) {
-        for (let entry of Animator.active) {
+    private removeActive(object: any) {
+        for (let entry of this.active) {
             if (entry.object === object) {
-                Animator.active.delete(entry);
+                this.active.delete(entry);
                 return;
             }
         }
