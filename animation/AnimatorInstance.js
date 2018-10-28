@@ -26,7 +26,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
  */
 var AnimatorInstance = /** @class */ (function () {
     function AnimatorInstance() {
-        this.active = new Set();
+        this.active = new Map();
         this.stepCallbacks = new Set();
         this.animationCompleteCallbacks = new Set();
     }
@@ -49,13 +49,10 @@ var AnimatorInstance = /** @class */ (function () {
     AnimatorInstance.prototype.animation = function (object, fieldTargets, step, parameters, stopOnComplete, velocity) {
         var e_1, _a;
         var t_s = window.performance.now() / 1000;
-        var entry = this.getActive(object);
-        if (entry == null) {
-            entry = {
-                object: object,
-                animatingFields: {},
-            };
-            this.active.add(entry);
+        var activeFields = this.active.get(object);
+        if (activeFields == null) {
+            activeFields = {};
+            this.active.set(object, activeFields);
         }
         var fields = Object.keys(fieldTargets);
         try {
@@ -63,7 +60,7 @@ var AnimatorInstance = /** @class */ (function () {
                 var field = fields_1_1.value;
                 var target = fieldTargets[field];
                 var current = object[field];
-                var animation = entry.animatingFields[field];
+                var animation = activeFields[field];
                 // create or update dynamic motion fields
                 if (animation == null) {
                     animation = {
@@ -80,7 +77,7 @@ var AnimatorInstance = /** @class */ (function () {
                         parameters: parameters,
                         stopOnComplete: stopOnComplete,
                     };
-                    entry.animatingFields[field] = animation;
+                    activeFields[field] = animation;
                 }
                 else {
                     // animation is already active, update state
@@ -104,17 +101,17 @@ var AnimatorInstance = /** @class */ (function () {
     AnimatorInstance.prototype.stop = function (object, fields) {
         var e_2, _a;
         if (fields == null) {
-            this.removeActive(object);
+            this.active.delete(object);
         }
         else {
-            var entry = this.getActive(object);
-            if (entry === null)
+            var activeFields = this.active.get(object);
+            if (activeFields == null)
                 return;
             var fieldNames = Array.isArray(fields) ? fields : Object.keys(fields);
             try {
                 for (var fieldNames_1 = __values(fieldNames), fieldNames_1_1 = fieldNames_1.next(); !fieldNames_1_1.done; fieldNames_1_1 = fieldNames_1.next()) {
                     var field = fieldNames_1_1.value;
-                    delete entry.animatingFields[field];
+                    delete activeFields[field];
                 }
             }
             catch (e_2_1) { e_2 = { error: e_2_1 }; }
@@ -125,8 +122,8 @@ var AnimatorInstance = /** @class */ (function () {
                 finally { if (e_2) throw e_2.error; }
             }
             // if there's no field animations left then remove the entry
-            if (Object.keys(entry.animatingFields).length === 0) {
-                this.active.delete(entry);
+            if (Object.keys(activeFields).length === 0) {
+                this.active.delete(object);
             }
         }
     };
@@ -137,12 +134,13 @@ var AnimatorInstance = /** @class */ (function () {
         try {
             for (var _d = __values(this.active), _e = _d.next(); !_e.done; _e = _d.next()) {
                 var entry = _e.value;
-                var object = entry.object;
-                var animatingFields = Object.keys(entry.animatingFields);
+                var object = entry[0];
+                var activeFields = entry[1];
+                var activeFieldNames = Object.keys(activeFields);
                 try {
-                    for (var animatingFields_1 = __values(animatingFields), animatingFields_1_1 = animatingFields_1.next(); !animatingFields_1_1.done; animatingFields_1_1 = animatingFields_1.next()) {
-                        var field = animatingFields_1_1.value;
-                        var animation = entry.animatingFields[field];
+                    for (var activeFieldNames_1 = __values(activeFieldNames), activeFieldNames_1_1 = activeFieldNames_1.next(); !activeFieldNames_1_1.done; activeFieldNames_1_1 = activeFieldNames_1.next()) {
+                        var field = activeFieldNames_1_1.value;
+                        var animation = activeFields[field];
                         animation.state.x = animation.target - object[field];
                         animation.step(time_s, animation.state, animation.parameters);
                         object[field] = animation.target - animation.state.x;
@@ -152,7 +150,7 @@ var AnimatorInstance = /** @class */ (function () {
                         var totalEnergy = animation.state.pe + kineticEnergy;
                         // @! magic number: can we derive a condition that's linked to user-known properties
                         if (animation.stopOnComplete && totalEnergy < 0.000001) {
-                            delete entry.animatingFields[field];
+                            delete activeFields[field];
                             object[field] = animation.target;
                             this.fieldComplete(object, field);
                         }
@@ -161,13 +159,13 @@ var AnimatorInstance = /** @class */ (function () {
                 catch (e_4_1) { e_4 = { error: e_4_1 }; }
                 finally {
                     try {
-                        if (animatingFields_1_1 && !animatingFields_1_1.done && (_b = animatingFields_1.return)) _b.call(animatingFields_1);
+                        if (activeFieldNames_1_1 && !activeFieldNames_1_1.done && (_b = activeFieldNames_1.return)) _b.call(activeFieldNames_1);
                     }
                     finally { if (e_4) throw e_4.error; }
                 }
                 // if there's no field animations left then remove the entry
-                if (Object.keys(entry.animatingFields).length === 0) {
-                    this.active.delete(entry);
+                if (Object.keys(activeFields).length === 0) {
+                    this.active.delete(object);
                 }
             }
         }
@@ -306,43 +304,6 @@ var AnimatorInstance = /** @class */ (function () {
             state.v = A * e * (a * s + b * c);
         }
         state.pe = 0.5 * k * state.x * state.x;
-    };
-    AnimatorInstance.prototype.getActive = function (object) {
-        var e_8, _a;
-        try {
-            for (var _b = __values(this.active), _c = _b.next(); !_c.done; _c = _b.next()) {
-                var entry = _c.value;
-                if (object === entry.object)
-                    return entry;
-            }
-        }
-        catch (e_8_1) { e_8 = { error: e_8_1 }; }
-        finally {
-            try {
-                if (_c && !_c.done && (_a = _b.return)) _a.call(_b);
-            }
-            finally { if (e_8) throw e_8.error; }
-        }
-        return null;
-    };
-    AnimatorInstance.prototype.removeActive = function (object) {
-        var e_9, _a;
-        try {
-            for (var _b = __values(this.active), _c = _b.next(); !_c.done; _c = _b.next()) {
-                var entry = _c.value;
-                if (entry.object === object) {
-                    this.active.delete(entry);
-                    return;
-                }
-            }
-        }
-        catch (e_9_1) { e_9 = { error: e_9_1 }; }
-        finally {
-            try {
-                if (_c && !_c.done && (_a = _b.return)) _a.call(_b);
-            }
-            finally { if (e_9) throw e_9.error; }
-        }
     };
     return AnimatorInstance;
 }());

@@ -13,16 +13,13 @@
  * - For fixed time springs we can implement a fix/physical blended version of springStep, that lerps to 0 as t -> duration
  */
 export declare class AnimatorInstance {
-    protected active: Set<{
-        object: any;
-        animatingFields: {
-            [key: string]: {
-                state: AnimationState;
-                target: number;
-                step: (dt_ms: number, state: AnimationState, parameters: any) => void;
-                parameters: any;
-                stopOnComplete: boolean;
-            };
+    protected active: Map<any, {
+        [field: string]: {
+            state: AnimationState;
+            target: number;
+            step: (dt_ms: number, state: AnimationState, parameters: any) => void;
+            parameters: any;
+            stopOnComplete: boolean;
         };
     }>;
     protected stepCallbacks: Set<(steppedAnimationCount: number) => void>;
@@ -67,8 +64,6 @@ export declare class AnimatorInstance {
     removeStepCompleteCallback(callback: (steppedAnimationCount: number) => void): boolean;
     private fieldComplete;
     private stringStep;
-    private getActive;
-    private removeActive;
 }
 declare type AnimationState = {
     x: number;
