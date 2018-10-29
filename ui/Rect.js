@@ -27,7 +27,7 @@ var Rect = /** @class */ (function (_super) {
         if (h === void 0) { h = 10; }
         if (color === void 0) { color = [1, 0, 0, 1]; }
         var _this = _super.call(this) || this;
-        _this.color = new Float32Array(4);
+        _this.color = new Float32Array([0, 0, 0, 1]);
         _this.blendFactor = 1;
         _this.attributeLayout = [
             { name: 'position', type: GPUDevice_1.AttributeType.VEC2 },
