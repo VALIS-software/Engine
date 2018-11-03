@@ -19,14 +19,14 @@ export interface Layout {
     w: number,
     h: number,
 
-    layoutX: number,
-    layoutY: number,
+    originX: number,
+    originY: number,
     
-    layoutW: number,
-    layoutH: number,
+    relativeW: number,
+    relativeH: number,
 
-    layoutParentX: number,
-    layoutParentY: number,
+    relativeX: number,
+    relativeY: number,
 }
 
 /**
@@ -59,35 +59,37 @@ export class Object2D extends Renderable<Object2D> implements Layout {
     get h() { return this._h; }
 
     /**
-     * When computing the world-transform, layoutX applies an offset in units of _this_ object's width
+     * When computing the world-transform, originX applies an offset in units of _this_ object's width.
+     * For example, setting originX and originY to -1 will offset the object so the bottom right corner is placed where top-left used to be
+     * 
      */
-    set layoutX(wx: number) { this._layoutX = wx; this.worldTransformNeedsUpdate = true; }
-    get layoutX() { return this._layoutX; }
+    set originX(wx: number) { this._originX = wx; this.worldTransformNeedsUpdate = true; }
+    get originX() { return this._originX; }
     /**
-     * When computing the world-transform, layoutY applies an offset in units of _this_ object's height
+     * When computing the world-transform, originY applies an offset in units of _this_ object's height
      */
-    set layoutY(hy: number) { this._layoutY = hy; this.worldTransformNeedsUpdate = true; }
-    get layoutY() { return this._layoutY; }
+    set originY(hy: number) { this._originY = hy; this.worldTransformNeedsUpdate = true; }
+    get originY() { return this._originY; }
     /**
-     * When computing the world-transform, layoutParentX applies an offset in units of this object's _parent's_ width
+     * When computing the world-transform, relativeX applies an offset in units of this object's _parent's_ width
      */
-    set layoutParentX(wx: number) { this._layoutParentX = wx; this.worldTransformNeedsUpdate = true; }
-    get layoutParentX() { return this._layoutParentX; }
+    set relativeX(wx: number) { this._relativeX = wx; this.worldTransformNeedsUpdate = true; }
+    get relativeX() { return this._relativeX; }
     /**
-     * When computing the world-transform, layoutParentY applies an offset in units of this object's _parent's_ height
+     * When computing the world-transform, relativeY applies an offset in units of this object's _parent's_ height
      */
-    set layoutParentY(hy: number) { this._layoutParentY = hy; this.worldTransformNeedsUpdate = true; }
-    get layoutParentY() { return this._layoutParentY; }
+    set relativeY(hy: number) { this._relativeY = hy; this.worldTransformNeedsUpdate = true; }
+    get relativeY() { return this._relativeY; }
     /**
-     * When computing the world-transform, layoutW applies an offset to this object's width in units of this object's _parent's_ width
+     * When computing the world-transform, relativeW applies an offset to this object's width in units of this object's _parent's_ width
      */
-    set layoutW(w: number) { this._layoutW = w; this.worldTransformNeedsUpdate = true; }
-    get layoutW() { return this._layoutW; }
+    set relativeW(w: number) { this._relativeW = w; this.worldTransformNeedsUpdate = true; }
+    get relativeW() { return this._relativeW; }
     /**
-     * When computing the world-transform, layoutH applies an offset to this object's height in units of this object's _parent's_ height
+     * When computing the world-transform, relativeH applies an offset to this object's height in units of this object's _parent's_ height
      */
-    set layoutH(h: number) { this._layoutH = h; this.worldTransformNeedsUpdate = true; }
-    get layoutH() { return this._layoutH; }
+    set relativeH(h: number) { this._relativeH = h; this.worldTransformNeedsUpdate = true; }
+    get relativeH() { return this._relativeH; }
 
     cursorStyle: null | string = null;
 
@@ -106,12 +108,12 @@ export class Object2D extends Renderable<Object2D> implements Layout {
     protected _h: number = 0;
 
     // layout parameters
-    protected _layoutX: number = 0;
-    protected _layoutY: number = 0;
-    protected _layoutParentX: number = 0;
-    protected _layoutParentY: number = 0;
-    protected _layoutW: number = 0;
-    protected _layoutH: number = 0;
+    protected _originX: number = 0;
+    protected _originY: number = 0;
+    protected _relativeX: number = 0;
+    protected _relativeY: number = 0;
+    protected _relativeW: number = 0;
+    protected _relativeH: number = 0;
 
     // we track the number of listeners for each interaction event to prevent work when emitting events
     protected interactionEventListenerCount: { [Name in keyof InteractionEventMap]: number } = null;
@@ -266,11 +268,11 @@ export class Object2D extends Renderable<Object2D> implements Layout {
     }
 
     protected computeLayout(parentWidth: number, parentHeight: number) {
-        this.computedWidth = Math.max(this._w + parentWidth * this._layoutW, 0);
-        this.computedHeight = Math.max(this._h + parentHeight * this._layoutH, 0);
+        this.computedWidth = Math.max(this._w + parentWidth * this._relativeW, 0);
+        this.computedHeight = Math.max(this._h + parentHeight * this._relativeH, 0);
 
-        this.computedX = this._x + parentWidth * this._layoutParentX + this.computedWidth * this._layoutX;
-        this.computedY = this._y + parentHeight * this._layoutParentY + this.computedHeight * this._layoutY;
+        this.computedX = this._x + parentWidth * this._relativeX + this.computedWidth * this._originX;
+        this.computedY = this._y + parentHeight * this._relativeY + this.computedHeight * this._originY;
     }
 
     protected applyWorldTransform(transformMat4: Float32Array | null) {
