@@ -19,12 +19,12 @@ export interface Layout {
     y: number;
     w: number;
     h: number;
-    layoutX: number;
-    layoutY: number;
-    layoutW: number;
-    layoutH: number;
-    layoutParentX: number;
-    layoutParentY: number;
+    originX: number;
+    originY: number;
+    relativeW: number;
+    relativeH: number;
+    relativeX: number;
+    relativeY: number;
 }
 /**
  * Implements 2D transforms, hierarchical layout and user interaction event handling
@@ -40,29 +40,31 @@ export declare class Object2D extends Renderable<Object2D> implements Layout {
     w: number;
     h: number;
     /**
-     * When computing the world-transform, layoutX applies an offset in units of _this_ object's width
+     * When computing the world-transform, originX applies an offset in units of _this_ object's width.
+     * For example, setting originX and originY to -1 will offset the object so the bottom right corner is placed where top-left used to be
+     *
      */
-    layoutX: number;
+    originX: number;
     /**
-     * When computing the world-transform, layoutY applies an offset in units of _this_ object's height
+     * When computing the world-transform, originY applies an offset in units of _this_ object's height
      */
-    layoutY: number;
+    originY: number;
     /**
-     * When computing the world-transform, layoutParentX applies an offset in units of this object's _parent's_ width
+     * When computing the world-transform, relativeX applies an offset in units of this object's _parent's_ width
      */
-    layoutParentX: number;
+    relativeX: number;
     /**
-     * When computing the world-transform, layoutParentY applies an offset in units of this object's _parent's_ height
+     * When computing the world-transform, relativeY applies an offset in units of this object's _parent's_ height
      */
-    layoutParentY: number;
+    relativeY: number;
     /**
-     * When computing the world-transform, layoutW applies an offset to this object's width in units of this object's _parent's_ width
+     * When computing the world-transform, relativeW applies an offset to this object's width in units of this object's _parent's_ width
      */
-    layoutW: number;
+    relativeW: number;
     /**
-     * When computing the world-transform, layoutH applies an offset to this object's height in units of this object's _parent's_ height
+     * When computing the world-transform, relativeH applies an offset to this object's height in units of this object's _parent's_ height
      */
-    layoutH: number;
+    relativeH: number;
     cursorStyle: null | string;
     protected _x: number;
     protected _y: number;
@@ -72,12 +74,12 @@ export declare class Object2D extends Renderable<Object2D> implements Layout {
     protected _sz: number;
     protected _w: number;
     protected _h: number;
-    protected _layoutX: number;
-    protected _layoutY: number;
-    protected _layoutParentX: number;
-    protected _layoutParentY: number;
-    protected _layoutW: number;
-    protected _layoutH: number;
+    protected _originX: number;
+    protected _originY: number;
+    protected _relativeX: number;
+    protected _relativeY: number;
+    protected _relativeW: number;
+    protected _relativeH: number;
     protected interactionEventListenerCount: {
         [Name in keyof InteractionEventMap]: number;
     };

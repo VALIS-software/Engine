@@ -42,12 +42,12 @@ var Object2D = /** @class */ (function (_super) {
         _this._w = 0;
         _this._h = 0;
         // layout parameters
-        _this._layoutX = 0;
-        _this._layoutY = 0;
-        _this._layoutParentX = 0;
-        _this._layoutParentY = 0;
-        _this._layoutW = 0;
-        _this._layoutH = 0;
+        _this._originX = 0;
+        _this._originY = 0;
+        _this._relativeX = 0;
+        _this._relativeY = 0;
+        _this._relativeW = 0;
+        _this._relativeH = 0;
         // we track the number of listeners for each interaction event to prevent work when emitting events
         _this.interactionEventListenerCount = null;
         _this.worldTransformNeedsUpdate = true;
@@ -121,57 +121,59 @@ var Object2D = /** @class */ (function (_super) {
         configurable: true
     });
     ;
-    Object.defineProperty(Object2D.prototype, "layoutX", {
-        get: function () { return this._layoutX; },
+    Object.defineProperty(Object2D.prototype, "originX", {
+        get: function () { return this._originX; },
         /**
-         * When computing the world-transform, layoutX applies an offset in units of _this_ object's width
+         * When computing the world-transform, originX applies an offset in units of _this_ object's width.
+         * For example, setting originX and originY to -1 will offset the object so the bottom right corner is placed where top-left used to be
+         *
          */
-        set: function (wx) { this._layoutX = wx; this.worldTransformNeedsUpdate = true; },
+        set: function (wx) { this._originX = wx; this.worldTransformNeedsUpdate = true; },
         enumerable: true,
         configurable: true
     });
-    Object.defineProperty(Object2D.prototype, "layoutY", {
-        get: function () { return this._layoutY; },
+    Object.defineProperty(Object2D.prototype, "originY", {
+        get: function () { return this._originY; },
         /**
-         * When computing the world-transform, layoutY applies an offset in units of _this_ object's height
+         * When computing the world-transform, originY applies an offset in units of _this_ object's height
          */
-        set: function (hy) { this._layoutY = hy; this.worldTransformNeedsUpdate = true; },
+        set: function (hy) { this._originY = hy; this.worldTransformNeedsUpdate = true; },
         enumerable: true,
         configurable: true
     });
-    Object.defineProperty(Object2D.prototype, "layoutParentX", {
-        get: function () { return this._layoutParentX; },
+    Object.defineProperty(Object2D.prototype, "relativeX", {
+        get: function () { return this._relativeX; },
         /**
-         * When computing the world-transform, layoutParentX applies an offset in units of this object's _parent's_ width
+         * When computing the world-transform, relativeX applies an offset in units of this object's _parent's_ width
          */
-        set: function (wx) { this._layoutParentX = wx; this.worldTransformNeedsUpdate = true; },
+        set: function (wx) { this._relativeX = wx; this.worldTransformNeedsUpdate = true; },
         enumerable: true,
         configurable: true
     });
-    Object.defineProperty(Object2D.prototype, "layoutParentY", {
-        get: function () { return this._layoutParentY; },
+    Object.defineProperty(Object2D.prototype, "relativeY", {
+        get: function () { return this._relativeY; },
         /**
-         * When computing the world-transform, layoutParentY applies an offset in units of this object's _parent's_ height
+         * When computing the world-transform, relativeY applies an offset in units of this object's _parent's_ height
          */
-        set: function (hy) { this._layoutParentY = hy; this.worldTransformNeedsUpdate = true; },
+        set: function (hy) { this._relativeY = hy; this.worldTransformNeedsUpdate = true; },
         enumerable: true,
         configurable: true
     });
-    Object.defineProperty(Object2D.prototype, "layoutW", {
-        get: function () { return this._layoutW; },
+    Object.defineProperty(Object2D.prototype, "relativeW", {
+        get: function () { return this._relativeW; },
         /**
-         * When computing the world-transform, layoutW applies an offset to this object's width in units of this object's _parent's_ width
+         * When computing the world-transform, relativeW applies an offset to this object's width in units of this object's _parent's_ width
          */
-        set: function (w) { this._layoutW = w; this.worldTransformNeedsUpdate = true; },
+        set: function (w) { this._relativeW = w; this.worldTransformNeedsUpdate = true; },
         enumerable: true,
         configurable: true
     });
-    Object.defineProperty(Object2D.prototype, "layoutH", {
-        get: function () { return this._layoutH; },
+    Object.defineProperty(Object2D.prototype, "relativeH", {
+        get: function () { return this._relativeH; },
         /**
-         * When computing the world-transform, layoutH applies an offset to this object's height in units of this object's _parent's_ height
+         * When computing the world-transform, relativeH applies an offset to this object's height in units of this object's _parent's_ height
          */
-        set: function (h) { this._layoutH = h; this.worldTransformNeedsUpdate = true; },
+        set: function (h) { this._relativeH = h; this.worldTransformNeedsUpdate = true; },
         enumerable: true,
         configurable: true
     });
@@ -309,10 +311,10 @@ var Object2D = /** @class */ (function (_super) {
         };
     };
     Object2D.prototype.computeLayout = function (parentWidth, parentHeight) {
-        this.computedWidth = Math.max(this._w + parentWidth * this._layoutW, 0);
-        this.computedHeight = Math.max(this._h + parentHeight * this._layoutH, 0);
-        this.computedX = this._x + parentWidth * this._layoutParentX + this.computedWidth * this._layoutX;
-        this.computedY = this._y + parentHeight * this._layoutParentY + this.computedHeight * this._layoutY;
+        this.computedWidth = Math.max(this._w + parentWidth * this._relativeW, 0);
+        this.computedHeight = Math.max(this._h + parentHeight * this._relativeH, 0);
+        this.computedX = this._x + parentWidth * this._relativeX + this.computedWidth * this._originX;
+        this.computedY = this._y + parentHeight * this._relativeY + this.computedHeight * this._originY;
     };
     Object2D.prototype.applyWorldTransform = function (transformMat4) {
         var e_3, _a, e_4, _b;
