@@ -33,11 +33,15 @@ var Node = /** @class */ (function () {
      * Useful for toggling the visibility of a node by removing or adding it to the scene-graph
      */
     Node.prototype.toggleChild = function (node, value) {
-        if (value && !this.has(node)) {
-            this.add(node);
+        if (value) {
+            if (!this.has(node)) {
+                this.add(node);
+            }
         }
-        else if (this.has(node)) {
-            this.remove(node);
+        else {
+            if (this.has(node)) {
+                this.remove(node);
+            }
         }
     };
     Node.prototype.applyTransformToSubNodes = function (root) {
