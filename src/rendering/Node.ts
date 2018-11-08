@@ -24,10 +24,14 @@ export class Node<T extends Node<any>> {
 	 * Useful for toggling the visibility of a node by removing or adding it to the scene-graph
 	 */
 	toggleChild(node: T, value: boolean) {
-		if (value && !this.has(node)) {
-			this.add(node);
-		} else if (this.has(node)) {
-			this.remove(node);
+		if (value) {
+			if (!this.has(node)) {
+				this.add(node);
+			}
+		} else {
+			if (this.has(node)) {
+				this.remove(node);
+			}
 		}
 	}
 
