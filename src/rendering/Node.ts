@@ -22,8 +22,6 @@ export class Node<T extends Node<any>> {
 	/**
 	 * Add or remove a child element based on the value flag
 	 * Useful for toggling the visibility of a node by removing or adding it to the scene-graph
-	 * @param child 
-	 * @param value 
 	 */
 	toggleChild(node: T, value: boolean) {
 		if (value && !this.has(node)) {
