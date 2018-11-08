@@ -28,6 +28,18 @@ var Node = /** @class */ (function () {
     Node.prototype.remove = function (child) {
         return this.children.delete(child);
     };
+    /**
+     * Add or remove a child element based on the value flag
+     * Useful for toggling the visibility of a node by removing or adding it to the scene-graph
+     */
+    Node.prototype.toggleChild = function (node, value) {
+        if (value && !this.has(node)) {
+            this.add(node);
+        }
+        else if (this.has(node)) {
+            this.remove(node);
+        }
+    };
     Node.prototype.applyTransformToSubNodes = function (root) {
         if (root === void 0) { root = true; }
         var e_1, _a;
