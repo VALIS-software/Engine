@@ -170,6 +170,8 @@ var Text = /** @class */ (function (_super) {
         this.vertexCount = 0;
     };
     Text.prototype.draw = function (context) {
+        if (this.vertexCount <= 0)
+            return;
         // renderPass/shader
         context.uniform2f('viewportSize', context.viewport.w, context.viewport.h);
         // font
