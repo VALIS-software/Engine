@@ -232,6 +232,8 @@ export class Text extends Object2D {
     }
 
     draw(context: DrawContext) {
+        if (this.vertexCount <= 0) return;
+
         // renderPass/shader
         context.uniform2f('viewportSize', context.viewport.w, context.viewport.h);
 
