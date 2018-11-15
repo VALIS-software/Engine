@@ -24,33 +24,29 @@ export declare class AnimatorInstance {
         field: string;
         once: boolean;
     }>;
-    springTo<T>(object: T, fieldTargets: {
-        [K in keyof T]?: number;
+    springTo(object: any, fieldTargets: {
+        [key: string]: number;
     }, criticalTension: number, velocity?: number): void;
-    springTo<T>(object: T, fieldTargets: {
-        [K in keyof T]?: number;
+    springTo(object: any, fieldTargets: {
+        [key: string]: number;
     }, parameters: {
         tension: number;
         friction: number;
     }, velocity?: number): void;
-    spring<T>(object: T, fieldTargets: {
-        [K in keyof T]?: number;
+    spring(object: string, fieldTargets: {
+        [key: string]: number;
     }, criticalTension: number, velocity?: number): void;
-    spring<T>(object: T, fieldTargets: {
-        [K in keyof T]?: number;
+    spring(object: string, fieldTargets: {
+        [key: string]: number;
     }, parameters: {
         tension: number;
         friction: number;
     }, velocity?: number): void;
-    animation<T extends {
-        [key: string]: any;
-    }, P>(object: T, fieldTargets: {
-        [K in keyof T]?: number;
+    animation<P>(object: any, fieldTargets: {
+        [key: string]: number;
     }, step: (dt_ms: number, state: AnimationState, parameters: P) => void, parameters: P, stopOnComplete: boolean, velocity?: number): void;
-    stop<T extends {
-        [key: string]: any;
-    }>(object: T, fields?: Array<keyof T> | {
-        [K in keyof T]?: number;
+    stop(object: any, fields?: Array<string> | {
+        [key: string]: number;
     }): void;
     frame(time_s?: number): void;
     activeAnimationCount(): number;
