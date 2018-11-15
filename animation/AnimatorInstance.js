@@ -102,11 +102,15 @@ var AnimatorInstance = /** @class */ (function () {
             var activeFields = this.active.get(object);
             if (activeFields == null)
                 return;
-            var fieldNames = Array.isArray(fields) ? fields : Object.keys(fields);
+            var isArray = Array.isArray(fields);
+            var fieldNames = isArray ? fields : Object.keys(fields);
             try {
                 for (var fieldNames_1 = __values(fieldNames), fieldNames_1_1 = fieldNames_1.next(); !fieldNames_1_1.done; fieldNames_1_1 = fieldNames_1.next()) {
                     var field = fieldNames_1_1.value;
                     delete activeFields[field];
+                    if (!isArray) {
+                        object[field] = fields[field];
+                    }
                 }
             }
             catch (e_2_1) { e_2 = { error: e_2_1 }; }
