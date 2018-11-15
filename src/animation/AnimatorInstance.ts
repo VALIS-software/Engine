@@ -58,7 +58,7 @@ export class AnimatorInstance {
         this.animation(object, fieldTargets, this.stringStep, springParameters, false, velocity);
     }
 
-    public animation<T, P>(
+    public animation<T extends { [key: string]: any }, P>(
         object: T,
         fieldTargets: { [K in keyof T]?: number },
         step: (dt_ms: number, state: AnimationState, parameters: P) => void,
