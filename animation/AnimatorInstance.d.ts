@@ -47,8 +47,10 @@ export declare class AnimatorInstance {
     }, P>(object: T, fieldTargets: {
         [K in keyof T]?: number;
     }, step: (dt_ms: number, state: AnimationState, parameters: P) => void, parameters: P, stopOnComplete: boolean, velocity?: number): void;
-    stop(object: any, fields?: Array<string> | {
-        [key: string]: number;
+    stop<T extends {
+        [key: string]: any;
+    }>(object: T, fields?: Array<keyof T> | {
+        [K in keyof T]?: number;
     }): void;
     frame(time_s?: number): void;
     activeAnimationCount(): number;
