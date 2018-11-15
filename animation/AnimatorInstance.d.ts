@@ -45,7 +45,7 @@ export declare class AnimatorInstance {
     animation<P>(object: any, fieldTargets: {
         [key: string]: number;
     }, step: (dt_ms: number, state: AnimationState, parameters: P) => void, parameters: P, stopOnComplete: boolean, velocity?: number): void;
-    stop(object: any, fields?: Array<string>): void;
+    stop(object: any, fields?: string | Array<string>): void;
     frame(time_s?: number): void;
     activeAnimationCount(): number;
     addAnimationCompleteCallback<T>(object: T, field: string, callback: (object: T) => void, once?: boolean): void;

@@ -103,7 +103,7 @@ var AnimatorInstance = /** @class */ (function () {
             if (activeFields == null)
                 return;
             var isArray = Array.isArray(fields);
-            var fieldNames = isArray ? fields : Object.keys(fields);
+            var fieldNames = isArray ? fields : [fields];
             try {
                 for (var fieldNames_1 = __values(fieldNames), fieldNames_1_1 = fieldNames_1.next(); !fieldNames_1_1.done; fieldNames_1_1 = fieldNames_1.next()) {
                     var field = fieldNames_1_1.value;
