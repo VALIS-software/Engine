@@ -112,7 +112,7 @@ export class AnimatorInstance {
         }
     }
     
-    public stop(object: any, fields?: Array<string> | { [key: string]: number }) {
+    public stop<T extends { [key: string]: any }>(object: T, fields?: Array<keyof T> | { [K in keyof T]?: number }) {
         if (fields == null) {
             this.active.delete(object);
         } else {
@@ -124,10 +124,10 @@ export class AnimatorInstance {
             let fieldNames = isArray ? fields : Object.keys(fields);
 
             for (let field of fieldNames) {
-                delete activeFields[field];
+                delete activeFields[field as string];
 
                 if (!isArray) {
-                    object[field] = (fields as { [key: string]: number })[field];
+                    object[field] = (fields as { [key: string]: number })[field as string];
                 }
             }
 
