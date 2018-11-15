@@ -34,9 +34,9 @@ export class AnimatorInstance {
         - Duration to reach this state
         - [Some sort of normalized wobblyness control], 0 = no energy loss, 0.5 = critical, 1 = ?
     */
-    public springTo<T>(object: T, fieldTargets: { [K in keyof T]?: number }, criticalTension: number, velocity?: number): void;
-    public springTo<T>(object: T, fieldTargets: { [K in keyof T]?: number }, parameters: { tension: number, friction: number }, velocity?: number): void;
-    public springTo<T>(object: T, fieldTargets: { [K in keyof T]?: number }, parameters: any, velocity?: number): void {
+    public springTo(object: any, fieldTargets: { [key: string]: number }, criticalTension: number, velocity?: number): void;
+    public springTo(object: any, fieldTargets: { [key: string]: number }, parameters: { tension: number, friction: number }, velocity?: number): void;
+    public springTo(object: any, fieldTargets: { [key: string]: number }, parameters: any, velocity?: number): void {
         // handle multiple types of spring parameters
         let springParameters = parameters instanceof Object ? parameters : {
             tension: parameters,
@@ -46,9 +46,9 @@ export class AnimatorInstance {
         this.animation(object, fieldTargets, this.stringStep, springParameters, true, velocity);
     }
 
-    public spring<T>(object: T, fieldTargets: { [K in keyof T]?: number }, criticalTension: number, velocity?: number): void;
-    public spring<T>(object: T, fieldTargets: { [K in keyof T]?: number }, parameters: { tension: number, friction: number }, velocity?: number): void;
-    public spring<T>(object: T, fieldTargets: { [K in keyof T]?: number }, parameters: any, velocity?: number): void {
+    public spring(object: string, fieldTargets: { [key: string]: number }, criticalTension: number, velocity?: number): void;
+    public spring(object: string, fieldTargets: { [key: string]: number }, parameters: { tension: number, friction: number }, velocity?: number): void;
+    public spring(object: string, fieldTargets: { [key: string]: number }, parameters: any, velocity?: number): void {
         // handle multiple types of spring parameters
         let springParameters = parameters instanceof Object ? parameters : {
             tension: parameters,
@@ -58,9 +58,9 @@ export class AnimatorInstance {
         this.animation(object, fieldTargets, this.stringStep, springParameters, false, velocity);
     }
 
-    public animation<T extends { [key: string]: any }, P>(
-        object: T,
-        fieldTargets: { [K in keyof T]?: number },
+    public animation<P>(
+        object: any,
+        fieldTargets: { [key: string]: number },
         step: (dt_ms: number, state: AnimationState, parameters: P) => void,
         parameters: P,
         stopOnComplete: boolean,
@@ -112,7 +112,7 @@ export class AnimatorInstance {
         }
     }
     
-    public stop<T extends { [key: string]: any }>(object: T, fields?: Array<keyof T> | { [K in keyof T]?: number }) {
+    public stop(object: any, fields?: Array<string> | { [key: string]: number }) {
         if (fields == null) {
             this.active.delete(object);
         } else {
