@@ -112,7 +112,7 @@ export class AnimatorInstance {
         }
     }
     
-    public stop(object: any, fields?: Array<string> | { [key: string]: number }) {
+    public stop(object: any, fields?: Array<string>) {
         if (fields == null) {
             this.active.delete(object);
         } else {
@@ -125,10 +125,6 @@ export class AnimatorInstance {
 
             for (let field of fieldNames) {
                 delete activeFields[field as string];
-
-                if (!isArray) {
-                    object[field] = (fields as { [key: string]: number })[field as string];
-                }
             }
 
             // if there's no field animations left then remove the entry
