@@ -12,6 +12,10 @@ import { Object2D } from "./Object2D";
 export class Rect extends Object2D {
 
     color = new Float32Array([0, 0, 0, 1]);
+
+    /**
+     * When set to 0, blending is additive, when set to 1, blending is normal alpha blending
+     */
     blendFactor: number = 1;
 
     protected attributeLayout: AttributeLayout = [
