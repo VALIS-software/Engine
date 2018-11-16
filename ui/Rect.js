@@ -28,6 +28,9 @@ var Rect = /** @class */ (function (_super) {
         if (color === void 0) { color = [1, 0, 0, 1]; }
         var _this = _super.call(this) || this;
         _this.color = new Float32Array([0, 0, 0, 1]);
+        /**
+         * When set to 0, blending is additive, when set to 1, blending is normal alpha blending
+         */
         _this.blendFactor = 1;
         _this.attributeLayout = [
             { name: 'position', type: GPUDevice_1.AttributeType.VEC2 },
