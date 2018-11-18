@@ -38,6 +38,15 @@ export class UsageCache<T> {
         return Object.keys(this.cache);
     }
 
+    forEachUsed(callback: (value: T) => void){
+        for (let key in this.cache) {
+            let entry = this.cache[key];
+            if (entry.used) {
+                callback(entry.value);
+            }
+        }
+    }
+
     markUnused(key: string) {
         this.cache[key].used = false;
     }
