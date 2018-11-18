@@ -25,6 +25,14 @@ var UsageCache = /** @class */ (function () {
     UsageCache.prototype.keys = function () {
         return Object.keys(this.cache);
     };
+    UsageCache.prototype.forEachUsed = function (callback) {
+        for (var key in this.cache) {
+            var entry = this.cache[key];
+            if (entry.used) {
+                callback(entry.value);
+            }
+        }
+    };
     UsageCache.prototype.markUnused = function (key) {
         this.cache[key].used = false;
     };

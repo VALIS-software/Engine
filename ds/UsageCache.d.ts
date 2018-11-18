@@ -13,6 +13,7 @@ export declare class UsageCache<T> {
     constructor();
     get(key: string, onCacheMiss: (key: string) => T): T;
     keys(): string[];
+    forEachUsed(callback: (value: T) => void): void;
     markUnused(key: string): void;
     markAllUnused(): void;
     remove(key: string, onRemove: (value: T) => void): void;
