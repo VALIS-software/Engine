@@ -64,6 +64,7 @@ var Text = /** @class */ (function (_super) {
             return this._string;
         },
         set: function (v) {
+            v = v + ''; // ensure input is typed as a string
             var changed = this._string !== v;
             this._string = v;
             if (changed) {
