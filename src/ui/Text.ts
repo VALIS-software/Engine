@@ -15,6 +15,7 @@ import { SharedResources } from "./../SharedResources";
 export class Text extends Object2D {
 
     set string(v: string) {
+        v = v + ''; // ensure input is typed as a string
         let changed = this._string !== v;
         this._string = v;
         if (changed) {
