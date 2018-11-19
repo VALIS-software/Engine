@@ -12,7 +12,7 @@ export declare class Rect extends Object2D {
     /**
      * When set to 0, blending is additive, when set to 1, blending is normal alpha blending
      */
-    blendFactor: number;
+    additiveBlending: number;
     protected attributeLayout: AttributeLayout;
     constructor(w?: number, h?: number, color?: ArrayLike<number>);
     allocateGPUResources(device: GPUDevice): void;

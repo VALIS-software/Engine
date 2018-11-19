@@ -16,7 +16,10 @@ export declare class Text extends Object2D {
     fontSizePx: number;
     color: Float32Array;
     opacity: number;
-    additiveBlendFactor: number;
+    /**
+     * When additive blend factor is 1, the blend mode is additive, when 0, it's normal premultiplied alpha blended
+     */
+    additiveBlending: number;
     protected _string: string;
     protected _fontPath: string;
     protected _fontSizePx: number;

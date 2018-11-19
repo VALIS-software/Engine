@@ -31,7 +31,7 @@ var Rect = /** @class */ (function (_super) {
         /**
          * When set to 0, blending is additive, when set to 1, blending is normal alpha blending
          */
-        _this.blendFactor = 1;
+        _this.additiveBlending = 0;
         _this.attributeLayout = [
             { name: 'position', type: GPUDevice_1.AttributeType.VEC2 },
         ];
@@ -51,7 +51,7 @@ var Rect = /** @class */ (function (_super) {
         this.gpuProgram = null;
     };
     Rect.prototype.draw = function (context) {
-        context.uniform1f('blendFactor', this.blendFactor);
+        context.uniform1f('blendFactor', 1.0 - this.additiveBlending);
         context.uniform2f('size', this.computedWidth, this.computedHeight);
         context.uniformMatrix4fv('model', false, this.worldTransformMat4);
         context.uniform4f('color', this.color[0], this.color[1], this.color[2], this.color[3] * this.opacity);
