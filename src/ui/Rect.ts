@@ -16,7 +16,7 @@ export class Rect extends Object2D {
     /**
      * When set to 0, blending is additive, when set to 1, blending is normal alpha blending
      */
-    blendFactor: number = 1;
+    additiveBlending: number = 0;
 
     protected attributeLayout: AttributeLayout = [
         { name: 'position', type: AttributeType.VEC2 },
@@ -47,7 +47,7 @@ export class Rect extends Object2D {
     }
 
     draw(context: DrawContext) {
-        context.uniform1f('blendFactor', this.blendFactor);
+        context.uniform1f('blendFactor', 1.0 - this.additiveBlending);
         context.uniform2f('size', this.computedWidth, this.computedHeight);
         context.uniformMatrix4fv('model', false, this.worldTransformMat4);
         context.uniform4f('color', this.color[0], this.color[1], this.color[2], this.color[3] * this.opacity);
