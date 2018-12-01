@@ -85,7 +85,7 @@ export class Renderer {
 					// this.render(subpass);
 				// }
 
-				if (node.mask != null) {
+				if (node.mask != null && node.mask.render === true) {
 					// we can't used indexOf because masks may contain data from previous frame that extends beyond existingMaskIndex
 					let existingMaskIndex = -1;
 					for (let i = 0; i < maskIndex; i++) {
