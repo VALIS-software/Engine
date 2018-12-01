@@ -87,7 +87,7 @@ var Renderer = /** @class */ (function () {
                 // for (let subpass of node.dependentRenderPasses) {
                 // this.render(subpass);
                 // }
-                if (node.mask != null) {
+                if (node.mask != null && node.mask.render === true) {
                     // we can't used indexOf because masks may contain data from previous frame that extends beyond existingMaskIndex
                     var existingMaskIndex = -1;
                     for (var i = 0; i < maskIndex; i++) {
