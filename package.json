@@ -19,7 +19,7 @@
   },
   "homepage": "https://github.com/VALIS-software/Engine#readme",
   "dependencies": {
-    "gputext": "github:VALIS-software/GPUText.git"
+    "gputext": "github:VALIS-software/GPUText"
   },
   "devDependencies": {
     "@types/node": "^9.6.31",
