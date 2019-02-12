@@ -5,14 +5,16 @@ Object.defineProperty(exports, "__esModule", { value: true });
  * - A 'usage cache' determines which objects can be reused and which objects can be released between frames
  */
 var UsageCache = /** @class */ (function () {
-    function UsageCache() {
+    function UsageCache(onCacheMiss, onRemove) {
+        this.onCacheMiss = onCacheMiss;
+        this.onRemove = onRemove;
         this.cache = {};
         this.count = 0;
     }
     UsageCache.prototype.get = function (key, onCacheMiss) {
         var entry = this.cache[key];
         if (entry === undefined) {
-            var value = onCacheMiss(key);
+            var value = onCacheMiss != null ? onCacheMiss(key) : this.onCacheMiss(key);
             entry = this.cache[key] = {
                 value: value,
                 used: true,
@@ -42,27 +44,27 @@ var UsageCache = /** @class */ (function () {
             this.cache[key].used = false;
         }
     };
-    UsageCache.prototype.remove = function (key, onRemove) {
+    UsageCache.prototype.remove = function (key) {
         var entry = this.cache[key];
         if (entry !== undefined) {
             this.count--;
-            onRemove(entry.value);
+            this.onRemove(entry.value);
             delete this.cache[key];
         }
     };
-    UsageCache.prototype.removeUnused = function (onRemove) {
+    UsageCache.prototype.removeUnused = function () {
         for (var key in this.cache) {
             var entry = this.cache[key];
             if (!entry.used) {
                 this.count--;
-                onRemove(entry.value);
+                this.onRemove(entry.value);
                 delete this.cache[key];
             }
         }
     };
-    UsageCache.prototype.removeAll = function (onRemove) {
+    UsageCache.prototype.removeAll = function () {
         this.markAllUnused();
-        this.removeUnused(onRemove);
+        this.removeUnused();
     };
     return UsageCache;
 }());

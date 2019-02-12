@@ -38,7 +38,7 @@ var Rect = /** @class */ (function (_super) {
         _this.render = true;
         _this.w = w;
         _this.h = h;
-        _this.color.set(color);
+        _this.color = color;
         return _this;
     }
     Rect.prototype.allocateGPUResources = function (device) {

@@ -58,7 +58,7 @@ var Text = /** @class */ (function (_super) {
         _this._fontSizePx = fontSizePx;
         _this.fontPath = fontPath;
         _this.string = string;
-        _this.color.set(color);
+        _this.color = color;
         return _this;
     }
     Object.defineProperty(Text.prototype, "string", {

@@ -8,7 +8,7 @@ import { Object2D } from "./Object2D";
  * - Support rounded corners, stroke, glow & shadows, background shaders
  */
 export declare class Rect extends Object2D {
-    color: Float32Array;
+    color: ArrayLike<number>;
     /**
      * When set to 0, blending is additive, when set to 1, blending is normal alpha blending
      */
