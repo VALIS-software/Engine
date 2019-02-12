@@ -48,7 +48,7 @@ export class Text extends Object2D {
         return this._fontSizePx;
     }
 
-    color: Float32Array = new Float32Array(4);
+    color: ArrayLike<number> = new Float32Array(4);
     opacity: number = 1;
 
     /**
@@ -86,7 +86,7 @@ export class Text extends Object2D {
         this.fontPath = fontPath;
         this.string = string;
 
-        this.color.set(color);
+        this.color = color;
     }
 
     allocateGPUResources(device: GPUDevice) {

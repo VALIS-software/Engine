@@ -11,7 +11,7 @@ import { Object2D } from "./Object2D";
  */
 export class Rect extends Object2D {
 
-    color = new Float32Array([0, 0, 0, 1]);
+    color: ArrayLike<number> = new Float32Array([0, 0, 0, 1]);
 
     /**
      * When set to 0, blending is additive, when set to 1, blending is normal alpha blending
@@ -27,7 +27,7 @@ export class Rect extends Object2D {
         this.render = true;
         this.w = w;
         this.h = h;
-        this.color.set(color);
+        this.color = color;
     }
 
     allocateGPUResources(device: GPUDevice) {
