@@ -13,13 +13,16 @@ export class UsageCache<T> {
 
     readonly count: number = 0;
 
-    constructor() {}
+    constructor(
+        protected onCacheMiss: (key: string) => T,
+        protected onRemove: (value: T) => void,
+    ) {}
 
-    get(key: string, onCacheMiss: (key: string) => T) {
+    get(key: string, onCacheMiss?: (key: string) => T) {
         let entry = this.cache[key];
 
         if (entry === undefined) {
-            let value = onCacheMiss(key);
+            let value = onCacheMiss != null ? onCacheMiss(key) : this.onCacheMiss(key);
 
             entry = this.cache[key] = {
                 value: value,
@@ -58,29 +61,29 @@ export class UsageCache<T> {
         }
     }
 
-    remove(key: string, onRemove: (value: T) => void) {
+    remove(key: string) {
         let entry = this.cache[key];
         if (entry !== undefined) {
             (this.count as any)--;
-            onRemove(entry.value);
+            this.onRemove(entry.value);
             delete this.cache[key];
         }
     }
 
-    removeUnused(onRemove: (value: T) => void) {
+    removeUnused() {
         for (let key in this.cache) {
             let entry = this.cache[key];
             if (!entry.used) {
                 (this.count as any)--;
-                onRemove(entry.value);
+                this.onRemove(entry.value);
                 delete this.cache[key];
             }
         }
     }
 
-    removeAll(onRemove: (value: T) => void) {
+    removeAll() {
         this.markAllUnused();
-        this.removeUnused(onRemove);
+        this.removeUnused();
     }
 
 }
