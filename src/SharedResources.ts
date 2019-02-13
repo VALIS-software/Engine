@@ -6,17 +6,17 @@ export class SharedResources {
         { name: 'position', type: AttributeType.VEC2 },
     ];
 
-    static quadIndexBuffer: GPUIndexBuffer;
-
-    static unitQuadVertexBuffer: GPUBuffer;
-    static unitQuadVertexState: GPUVertexState;
-
-    static quad1x1VertexBuffer: GPUBuffer;
-    static quad1x1VertexState: GPUVertexState;
-
     private static programs: { [deviceId: string]: { [key: string]: GPUProgram } } = {};
     private static textures: { [deviceId: string]: { [key: string]: GPUTexture } } = {};
     private static buffers: { [deviceId: string]: { [key: string]: GPUBuffer } } = {};
+
+    private static quadIndexBuffers: { [deviceId: string]: GPUIndexBuffer } = {};
+
+    private static unitQuadVertexBuffers: { [deviceId: string]: GPUBuffer } = {};
+    private static unitQuadVertexStates: { [deviceId: string]: GPUVertexState } = {};
+
+    private static quad1x1VertexBuffers: { [deviceId: string]: GPUBuffer } = {};
+    private static quad1x1VertexStates: { [deviceId: string]: GPUVertexState } = {};
 
     static getProgram(device: GPUDevice, vertexCode: string, fragmentCode: string, attributeLayout: AttributeLayout) {
         let programs = SharedResources.getPrograms(device);
@@ -101,94 +101,123 @@ export class SharedResources {
         return false;
     }
 
-    static initialize(device: GPUDevice) {
-        this.quadIndexBuffer = device.createIndexBuffer({
-            data: new Uint8Array([
-                0, 1, 2,
-                0, 3, 1
-            ])
-        });
+    static getQuadIndexBuffer(device: GPUDevice) {
+        let h = this.quadIndexBuffers[device.deviceId];
+        if (h == null) {
+            h = this.quadIndexBuffers[device.deviceId] = device.createIndexBuffer({
+                data: new Uint8Array([
+                    0, 1, 2,
+                    0, 3, 1
+                ])
+            });
+        }
+        return h;
+    }
 
-        this.unitQuadVertexBuffer = device.createBuffer({
-            data: new Float32Array([
-                -1.0, -1.0,
-                 1.0, 1.0,
-                -1.0, 1.0,
-                 1.0, -1.0,
-            ]),
-        });
+    static getUnitQuadVertexBuffer(device: GPUDevice) {
+        let h = this.unitQuadVertexBuffers[device.deviceId];
+        if (h == null) {
+            h = this.unitQuadVertexBuffers[device.deviceId] = device.createBuffer({
+                data: new Float32Array([
+                    -1.0, -1.0,
+                    1.0, 1.0,
+                    -1.0, 1.0,
+                    1.0, -1.0,
+                ]),
+            });
+        }
+        return h;
+    }
 
-        this.unitQuadVertexState = device.createVertexState({
-            indexBuffer: this.quadIndexBuffer,
-            attributeLayout: this.quadAttributeLayout,
-            attributes: {
-                'position': {
-                    buffer: this.unitQuadVertexBuffer,
-                    offsetBytes: 0,
-                    strideBytes: 2 * 4
+    static getUnitQuadVertexState(device: GPUDevice) {
+        let h = this.unitQuadVertexStates[device.deviceId];
+        if (h == null) {
+            h = this.unitQuadVertexStates[device.deviceId] = device.createVertexState({
+                indexBuffer: this.getQuadIndexBuffer(device),
+                attributeLayout: this.quadAttributeLayout,
+                attributes: {
+                    'position': {
+                        buffer: this.getUnitQuadVertexBuffer(device),
+                        offsetBytes: 0,
+                        strideBytes: 2 * 4
+                    }
                 }
-            }
-        });
+            });
+        }
+        return h;
+    }
 
-        this.quad1x1VertexBuffer = device.createBuffer({
-            data: new Float32Array([
-                  0,   0,
-                1.0, 1.0,
-                  0, 1.0,
-                1.0,   0,
-            ]),
-        });
+    static getQuad1x1VertexBuffer(device: GPUDevice) {
+        let h = this.quad1x1VertexBuffers[device.deviceId];
+        if (h == null) {
+            h = this.quad1x1VertexBuffers[device.deviceId] = device.createBuffer({
+                data: new Float32Array([
+                    0, 0,
+                    1.0, 1.0,
+                    0, 1.0,
+                    1.0, 0,
+                ]),
+            });
+        }
+        return h;
+    }
 
-        this.quad1x1VertexState = device.createVertexState({
-            indexBuffer: this.quadIndexBuffer,
-            attributeLayout: this.quadAttributeLayout,
-            attributes: {
-                'position': {
-                    buffer: this.quad1x1VertexBuffer,
-                    offsetBytes: 0,
-                    strideBytes: 2 * 4
+    static getQuad1x1VertexState(device: GPUDevice) {
+        let h = this.quad1x1VertexStates[device.deviceId];
+        if (h == null) {
+            h = this.quad1x1VertexStates[device.deviceId] = device.createVertexState({
+                indexBuffer: this.getQuadIndexBuffer(device),
+                attributeLayout: this.quadAttributeLayout,
+                attributes: {
+                    'position': {
+                        buffer: this.getQuad1x1VertexBuffer(device),
+                        offsetBytes: 0,
+                        strideBytes: 2 * 4
+                    }
                 }
-            }
-        });
+            });
+        }
+        return h;
     }
 
     static release(device: GPUDevice) {
-        this.quadIndexBuffer.delete();
-        this.quadIndexBuffer = null;
-
-        this.unitQuadVertexState.delete();
-        this.unitQuadVertexState = null;
-        this.unitQuadVertexBuffer.delete();
-        this.unitQuadVertexBuffer = null;
-
-        this.quad1x1VertexState.delete();
-        this.quad1x1VertexState = null;
-        this.quad1x1VertexBuffer.delete();
-        this.quad1x1VertexBuffer = null;
-
-        for (let deviceId of Object.keys(this.programs)) {
-            let programs = this.programs[deviceId];
-            for (let key of Object.keys(this.programs)) {
-                programs[key].delete();
-            }
+        let programs = this.programs[device.deviceId];
+        for (let key in programs) {
+            programs[key].delete();
         }
-        this.programs = {};
+        delete this.programs[device.deviceId];
 
-        for (let deviceId of Object.keys(this.textures)) {
-            let textures = this.textures[deviceId];
-            for (let key of Object.keys(this.textures)) {
-                textures[key].delete();
-            }
+        let textures = this.textures[device.deviceId];
+        for (let key in textures) {
+            textures[key].delete();
         }
-        this.textures = {};
+        delete this.textures[device.deviceId];
 
-        for (let deviceId of Object.keys(this.buffers)) {
-            let buffers = this.buffers[deviceId];
-            for (let key of Object.keys(this.buffers)) {
-                buffers[key].delete();
-            }
+        let buffers = this.buffers[device.deviceId];
+        for (let key in buffers) {
+            buffers[key].delete();
         }
-        this.buffers = {};
+        delete this.buffers[device.deviceId];
+
+        let quadIndexBuffer = this.quadIndexBuffers[device.deviceId];
+        if (quadIndexBuffer != null) quadIndexBuffer.delete();
+        delete this.quadIndexBuffers[device.deviceId];
+
+        let unitQuadVertexBuffer = this.unitQuadVertexBuffers[device.deviceId];
+        if (unitQuadVertexBuffer != null) unitQuadVertexBuffer.delete();
+        delete this.unitQuadVertexBuffers[device.deviceId];
+
+        let unitQuadVertexState = this.unitQuadVertexStates[device.deviceId];
+        if (unitQuadVertexState != null) unitQuadVertexState.delete();
+        delete this.unitQuadVertexStates[device.deviceId];
+
+        let quad1x1VertexBuffer = this.quad1x1VertexBuffers[device.deviceId];
+        if (quad1x1VertexBuffer != null) quad1x1VertexBuffer.delete();
+        delete this.quad1x1VertexBuffers[device.deviceId];
+
+        let quad1x1VertexState = this.quad1x1VertexStates[device.deviceId];
+        if (quad1x1VertexState != null) quad1x1VertexState.delete();
+        delete this.quad1x1VertexStates[device.deviceId];
     }
 
     private static getPrograms(device: GPUDevice) {
