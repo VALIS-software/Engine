@@ -46,6 +46,7 @@ export class GPUDevice {
 	}
 
 	readonly name: string;
+	readonly deviceId: number;
 
 	protected gl: WebGLRenderingContext;
 	protected vertexStateIds = new IdManager(true);
@@ -68,7 +69,11 @@ export class GPUDevice {
 	private _bufferCount = 0;
 	private _textureCount = 0;
 
+	private static deviceIdCounter = 0;
+
 	constructor(gl: WebGLRenderingContext) {
+		this.deviceId = GPUDevice.deviceIdCounter++;
+
 		this.gl = gl;
 
 		// the vertex array object extension makes controlling vertex state simpler and faster
