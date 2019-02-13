@@ -47,6 +47,7 @@ var GPUDevice = /** @class */ (function () {
         this._vertexStateCount = 0;
         this._bufferCount = 0;
         this._textureCount = 0;
+        this.deviceId = GPUDevice.deviceIdCounter++;
         this.gl = gl;
         // the vertex array object extension makes controlling vertex state simpler and faster
         // however we fallback to normal vertex state handling when not available
@@ -477,6 +478,7 @@ var GPUDevice = /** @class */ (function () {
         var handleInternal = handle;
         this.textureUnitState[handleInternal.boundUnit].usageMetric = ++this.textureUnitUsageCounter;
     };
+    GPUDevice.deviceIdCounter = 0;
     return GPUDevice;
 }());
 exports.GPUDevice = GPUDevice;

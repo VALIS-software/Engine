@@ -34,6 +34,7 @@ export declare class GPUDevice {
         floatTexturesLinearFiltering: boolean;
     };
     readonly name: string;
+    readonly deviceId: number;
     protected gl: WebGLRenderingContext;
     protected vertexStateIds: IdManager;
     protected programIds: IdManager;
@@ -50,6 +51,7 @@ export declare class GPUDevice {
     private _vertexStateCount;
     private _bufferCount;
     private _textureCount;
+    private static deviceIdCounter;
     constructor(gl: WebGLRenderingContext);
     createBuffer(bufferDescriptor: BufferDescriptor): GPUBuffer;
     /**

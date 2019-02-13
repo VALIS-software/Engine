@@ -10,12 +10,15 @@ export declare class SharedResources {
     private static textures;
     private static buffers;
     static getProgram(device: GPUDevice, vertexCode: string, fragmentCode: string, attributeLayout: AttributeLayout): GPUProgram;
-    static deleteProgram(vertexCode: string, fragmentCode: string, attributeLayout: AttributeLayout): boolean;
+    static deleteProgram(device: GPUDevice, vertexCode: string, fragmentCode: string, attributeLayout: AttributeLayout): boolean;
     static getTexture(device: GPUDevice, key: string, descriptor: TextureDescriptor): GPUTexture;
-    static deleteTexture(key: string): boolean;
+    static deleteTexture(device: GPUDevice, key: string): boolean;
     static getBuffer(device: GPUDevice, key: string, descriptor: BufferDescriptor): GPUBuffer;
-    static deleteBuffer(key: string): boolean;
+    static deleteBuffer(device: GPUDevice, key: string): boolean;
     static initialize(device: GPUDevice): void;
-    static release(): void;
+    static release(device: GPUDevice): void;
+    private static getPrograms;
+    private static getTextures;
+    private static getBuffers;
 }
 export default SharedResources;
