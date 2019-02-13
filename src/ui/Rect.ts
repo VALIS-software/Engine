@@ -31,7 +31,7 @@ export class Rect extends Object2D {
     }
 
     allocateGPUResources(device: GPUDevice) {
-        this.gpuVertexState = SharedResources.quad1x1VertexState;
+        this.gpuVertexState = SharedResources.getQuad1x1VertexState(device);
         this.gpuProgram = SharedResources.getProgram(
             device,
             this.getVertexCode(),

@@ -1,14 +1,4 @@
 "use strict";
-var __values = (this && this.__values) || function (o) {
-    var m = typeof Symbol === "function" && o[Symbol.iterator], i = 0;
-    if (m) return m.call(o);
-    return {
-        next: function () {
-            if (o && i >= o.length) o = void 0;
-            return { value: o && o[i++], done: !o };
-        }
-    };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 var GPUDevice_1 = require("./rendering/GPUDevice");
 var SharedResources = /** @class */ (function () {
@@ -73,145 +63,116 @@ var SharedResources = /** @class */ (function () {
         }
         return false;
     };
-    SharedResources.initialize = function (device) {
-        this.quadIndexBuffer = device.createIndexBuffer({
-            data: new Uint8Array([
-                0, 1, 2,
-                0, 3, 1
-            ])
-        });
-        this.unitQuadVertexBuffer = device.createBuffer({
-            data: new Float32Array([
-                -1.0, -1.0,
-                1.0, 1.0,
-                -1.0, 1.0,
-                1.0, -1.0,
-            ]),
-        });
-        this.unitQuadVertexState = device.createVertexState({
-            indexBuffer: this.quadIndexBuffer,
-            attributeLayout: this.quadAttributeLayout,
-            attributes: {
-                'position': {
-                    buffer: this.unitQuadVertexBuffer,
-                    offsetBytes: 0,
-                    strideBytes: 2 * 4
+    SharedResources.getQuadIndexBuffer = function (device) {
+        var h = this.quadIndexBuffers[device.deviceId];
+        if (h == null) {
+            h = this.quadIndexBuffers[device.deviceId] = device.createIndexBuffer({
+                data: new Uint8Array([
+                    0, 1, 2,
+                    0, 3, 1
+                ])
+            });
+        }
+        return h;
+    };
+    SharedResources.getUnitQuadVertexBuffer = function (device) {
+        var h = this.unitQuadVertexBuffers[device.deviceId];
+        if (h == null) {
+            h = this.unitQuadVertexBuffers[device.deviceId] = device.createBuffer({
+                data: new Float32Array([
+                    -1.0, -1.0,
+                    1.0, 1.0,
+                    -1.0, 1.0,
+                    1.0, -1.0,
+                ]),
+            });
+        }
+        return h;
+    };
+    SharedResources.getUnitQuadVertexState = function (device) {
+        var h = this.unitQuadVertexStates[device.deviceId];
+        if (h == null) {
+            h = this.unitQuadVertexStates[device.deviceId] = device.createVertexState({
+                indexBuffer: this.getQuadIndexBuffer(device),
+                attributeLayout: this.quadAttributeLayout,
+                attributes: {
+                    'position': {
+                        buffer: this.getUnitQuadVertexBuffer(device),
+                        offsetBytes: 0,
+                        strideBytes: 2 * 4
+                    }
                 }
-            }
-        });
-        this.quad1x1VertexBuffer = device.createBuffer({
-            data: new Float32Array([
-                0, 0,
-                1.0, 1.0,
-                0, 1.0,
-                1.0, 0,
-            ]),
-        });
-        this.quad1x1VertexState = device.createVertexState({
-            indexBuffer: this.quadIndexBuffer,
-            attributeLayout: this.quadAttributeLayout,
-            attributes: {
-                'position': {
-                    buffer: this.quad1x1VertexBuffer,
-                    offsetBytes: 0,
-                    strideBytes: 2 * 4
+            });
+        }
+        return h;
+    };
+    SharedResources.getQuad1x1VertexBuffer = function (device) {
+        var h = this.quad1x1VertexBuffers[device.deviceId];
+        if (h == null) {
+            h = this.quad1x1VertexBuffers[device.deviceId] = device.createBuffer({
+                data: new Float32Array([
+                    0, 0,
+                    1.0, 1.0,
+                    0, 1.0,
+                    1.0, 0,
+                ]),
+            });
+        }
+        return h;
+    };
+    SharedResources.getQuad1x1VertexState = function (device) {
+        var h = this.quad1x1VertexStates[device.deviceId];
+        if (h == null) {
+            h = this.quad1x1VertexStates[device.deviceId] = device.createVertexState({
+                indexBuffer: this.getQuadIndexBuffer(device),
+                attributeLayout: this.quadAttributeLayout,
+                attributes: {
+                    'position': {
+                        buffer: this.getQuad1x1VertexBuffer(device),
+                        offsetBytes: 0,
+                        strideBytes: 2 * 4
+                    }
                 }
-            }
-        });
+            });
+        }
+        return h;
     };
     SharedResources.release = function (device) {
-        var e_1, _a, e_2, _b, e_3, _c, e_4, _d, e_5, _e, e_6, _f;
-        this.quadIndexBuffer.delete();
-        this.quadIndexBuffer = null;
-        this.unitQuadVertexState.delete();
-        this.unitQuadVertexState = null;
-        this.unitQuadVertexBuffer.delete();
-        this.unitQuadVertexBuffer = null;
-        this.quad1x1VertexState.delete();
-        this.quad1x1VertexState = null;
-        this.quad1x1VertexBuffer.delete();
-        this.quad1x1VertexBuffer = null;
-        try {
-            for (var _g = __values(Object.keys(this.programs)), _h = _g.next(); !_h.done; _h = _g.next()) {
-                var deviceId = _h.value;
-                var programs = this.programs[deviceId];
-                try {
-                    for (var _j = __values(Object.keys(this.programs)), _k = _j.next(); !_k.done; _k = _j.next()) {
-                        var key = _k.value;
-                        programs[key].delete();
-                    }
-                }
-                catch (e_2_1) { e_2 = { error: e_2_1 }; }
-                finally {
-                    try {
-                        if (_k && !_k.done && (_b = _j.return)) _b.call(_j);
-                    }
-                    finally { if (e_2) throw e_2.error; }
-                }
-            }
+        var programs = this.programs[device.deviceId];
+        for (var key in programs) {
+            programs[key].delete();
         }
-        catch (e_1_1) { e_1 = { error: e_1_1 }; }
-        finally {
-            try {
-                if (_h && !_h.done && (_a = _g.return)) _a.call(_g);
-            }
-            finally { if (e_1) throw e_1.error; }
+        delete this.programs[device.deviceId];
+        var textures = this.textures[device.deviceId];
+        for (var key in textures) {
+            textures[key].delete();
         }
-        this.programs = {};
-        try {
-            for (var _l = __values(Object.keys(this.textures)), _m = _l.next(); !_m.done; _m = _l.next()) {
-                var deviceId = _m.value;
-                var textures = this.textures[deviceId];
-                try {
-                    for (var _o = __values(Object.keys(this.textures)), _p = _o.next(); !_p.done; _p = _o.next()) {
-                        var key = _p.value;
-                        textures[key].delete();
-                    }
-                }
-                catch (e_4_1) { e_4 = { error: e_4_1 }; }
-                finally {
-                    try {
-                        if (_p && !_p.done && (_d = _o.return)) _d.call(_o);
-                    }
-                    finally { if (e_4) throw e_4.error; }
-                }
-            }
+        delete this.textures[device.deviceId];
+        var buffers = this.buffers[device.deviceId];
+        for (var key in buffers) {
+            buffers[key].delete();
         }
-        catch (e_3_1) { e_3 = { error: e_3_1 }; }
-        finally {
-            try {
-                if (_m && !_m.done && (_c = _l.return)) _c.call(_l);
-            }
-            finally { if (e_3) throw e_3.error; }
-        }
-        this.textures = {};
-        try {
-            for (var _q = __values(Object.keys(this.buffers)), _r = _q.next(); !_r.done; _r = _q.next()) {
-                var deviceId = _r.value;
-                var buffers = this.buffers[deviceId];
-                try {
-                    for (var _s = __values(Object.keys(this.buffers)), _t = _s.next(); !_t.done; _t = _s.next()) {
-                        var key = _t.value;
-                        buffers[key].delete();
-                    }
-                }
-                catch (e_6_1) { e_6 = { error: e_6_1 }; }
-                finally {
-                    try {
-                        if (_t && !_t.done && (_f = _s.return)) _f.call(_s);
-                    }
-                    finally { if (e_6) throw e_6.error; }
-                }
-            }
-        }
-        catch (e_5_1) { e_5 = { error: e_5_1 }; }
-        finally {
-            try {
-                if (_r && !_r.done && (_e = _q.return)) _e.call(_q);
-            }
-            finally { if (e_5) throw e_5.error; }
-        }
-        this.buffers = {};
+        delete this.buffers[device.deviceId];
+        var quadIndexBuffer = this.quadIndexBuffers[device.deviceId];
+        if (quadIndexBuffer != null)
+            quadIndexBuffer.delete();
+        delete this.quadIndexBuffers[device.deviceId];
+        var unitQuadVertexBuffer = this.unitQuadVertexBuffers[device.deviceId];
+        if (unitQuadVertexBuffer != null)
+            unitQuadVertexBuffer.delete();
+        delete this.unitQuadVertexBuffers[device.deviceId];
+        var unitQuadVertexState = this.unitQuadVertexStates[device.deviceId];
+        if (unitQuadVertexState != null)
+            unitQuadVertexState.delete();
+        delete this.unitQuadVertexStates[device.deviceId];
+        var quad1x1VertexBuffer = this.quad1x1VertexBuffers[device.deviceId];
+        if (quad1x1VertexBuffer != null)
+            quad1x1VertexBuffer.delete();
+        delete this.quad1x1VertexBuffers[device.deviceId];
+        var quad1x1VertexState = this.quad1x1VertexStates[device.deviceId];
+        if (quad1x1VertexState != null)
+            quad1x1VertexState.delete();
+        delete this.quad1x1VertexStates[device.deviceId];
     };
     SharedResources.getPrograms = function (device) {
         var a = this.programs[device.deviceId];
@@ -240,6 +201,11 @@ var SharedResources = /** @class */ (function () {
     SharedResources.programs = {};
     SharedResources.textures = {};
     SharedResources.buffers = {};
+    SharedResources.quadIndexBuffers = {};
+    SharedResources.unitQuadVertexBuffers = {};
+    SharedResources.unitQuadVertexStates = {};
+    SharedResources.quad1x1VertexBuffers = {};
+    SharedResources.quad1x1VertexStates = {};
     return SharedResources;
 }());
 exports.SharedResources = SharedResources;

@@ -42,7 +42,7 @@ var Rect = /** @class */ (function (_super) {
         return _this;
     }
     Rect.prototype.allocateGPUResources = function (device) {
-        this.gpuVertexState = SharedResources_1.SharedResources.quad1x1VertexState;
+        this.gpuVertexState = SharedResources_1.SharedResources.getQuad1x1VertexState(device);
         this.gpuProgram = SharedResources_1.SharedResources.getProgram(device, this.getVertexCode(), this.getFragmentCode(), this.attributeLayout);
     };
     Rect.prototype.releaseGPUResources = function () {
