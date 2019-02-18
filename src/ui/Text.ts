@@ -61,7 +61,7 @@ export class Text extends Object2D {
 
     color: ArrayLike<number> = [0, 0, 0, 1];
     strokeColor: ArrayLike<number> = new Float32Array([1, 1, 1, 1]);
-    strokeWidthPx: 1.0;
+    strokeWidthPx: number = 1.0;
     opacity: number = 1;
 
     /**

@@ -17,7 +17,7 @@ export declare class Text extends Object2D {
     strokeEnabled: boolean;
     color: ArrayLike<number>;
     strokeColor: ArrayLike<number>;
-    strokeWidthPx: 1.0;
+    strokeWidthPx: number;
     opacity: number;
     /**
      * When additive blend factor is 1, the blend mode is additive, when 0, it's normal premultiplied alpha blended

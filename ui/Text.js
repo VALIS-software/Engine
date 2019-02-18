@@ -41,6 +41,7 @@ var Text = /** @class */ (function (_super) {
         var _this = _super.call(this) || this;
         _this.color = [0, 0, 0, 1];
         _this.strokeColor = new Float32Array([1, 1, 1, 1]);
+        _this.strokeWidthPx = 1.0;
         _this.opacity = 1;
         /**
          * When additive blend factor is 1, the blend mode is additive, when 0, it's normal premultiplied alpha blended
