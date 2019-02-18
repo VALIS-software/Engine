@@ -48,7 +48,19 @@ export class Text extends Object2D {
         return this._fontSizePx;
     }
 
+    set strokeEnabled(v: boolean) {
+        let changed = v !== this._strokeEnabled;
+        this._strokeEnabled = v;
+        if (changed) {
+            this.gpuResourcesNeedAllocate = true;
+        }
+    }
+    get strokeEnabled() {
+        return this._strokeEnabled;
+    }
+
     color: ArrayLike<number> = new Float32Array(4);
+    strokeColor: ArrayLike<number> = new Float32Array(4);
     opacity: number = 1;
 
     /**
@@ -65,6 +77,7 @@ export class Text extends Object2D {
 
     protected _kerningEnabled = true;
     protected _ligaturesEnabled = true;
+    protected _strokeEnabled = false;
     protected _lineHeight = 1.0;
 
     // text-specific gpu resources
@@ -130,6 +143,7 @@ export class Text extends Object2D {
                 precision mediump float;
 
                 uniform vec4 color;
+                ${this._strokeEnabled ? `uniform vec4 strokeColor;` : ``}
                 uniform float blendFactor;
 
                 uniform sampler2D glyphAtlas;
@@ -148,11 +162,18 @@ export class Text extends Object2D {
                     float sigDist = median(sample.r, sample.g, sample.b);
 
                     // spread field range over 1px for antialiasing
-                    sigDist = clamp((sigDist - 0.5) * vFieldRangeDisplay_px + 0.5, 0.0, 1.0);
-
-                    float alpha = sigDist;
-
+                    float alpha = clamp((sigDist - 0.5) * vFieldRangeDisplay_px + 0.5, 0.0, 1.0);
                     gl_FragColor = vec4(color.rgb, blendFactor) * color.a * alpha;
+
+                    ${this.strokeEnabled ? `
+                    float strokeWidthPx = 1.0;
+                    float strokeDistThreshold = clamp(strokeWidthPx * 2. / vFieldRangeDisplay_px, 0.0, 1.0);
+                    float strokeDistScale = 1. / (1.0 - strokeDistThreshold);
+                    float _offset = 0.5 / strokeDistScale;
+                    float strokeAlpha = clamp((sigDist - _offset) * vFieldRangeDisplay_px + _offset, 0.0, 1.0);
+
+                    gl_FragColor += vec4(strokeColor.rgb, blendFactor) * strokeColor.a * strokeAlpha * (1.0 - fillAlpha);
+                    ` : ``}
                 }
                 `,
                 Text.attributeLayout
@@ -247,6 +268,9 @@ export class Text extends Object2D {
         // text instance
         context.uniform1f('glyphScale', this._glyphLayout.glyphScale);
         context.uniform4f('color', this.color[0], this.color[1], this.color[2], this.color[3] * this.opacity);
+        if (this.strokeEnabled) {
+            context.uniform4f('strokeColor', this.strokeColor[0], this.strokeColor[1], this.strokeColor[2], this.strokeColor[3] * this.opacity);
+        }
         context.uniform1f('blendFactor', 1.0 - this.additiveBlending);
         context.uniformMatrix4fv('transform', false, this.worldTransformMat4);
 
