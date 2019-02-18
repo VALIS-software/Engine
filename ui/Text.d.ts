@@ -14,7 +14,9 @@ export declare class Text extends Object2D {
     string: string;
     fontPath: string;
     fontSizePx: number;
+    strokeEnabled: boolean;
     color: ArrayLike<number>;
+    strokeColor: ArrayLike<number>;
     opacity: number;
     /**
      * When additive blend factor is 1, the blend mode is additive, when 0, it's normal premultiplied alpha blended
@@ -27,6 +29,7 @@ export declare class Text extends Object2D {
     protected _glyphLayout: GlyphLayout;
     protected _kerningEnabled: boolean;
     protected _ligaturesEnabled: boolean;
+    protected _strokeEnabled: boolean;
     protected _lineHeight: number;
     protected gpuVertexBuffer: GPUBuffer;
     protected glyphAtlas: GPUTexture;

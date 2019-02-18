@@ -40,6 +40,7 @@ var Text = /** @class */ (function (_super) {
         if (color === void 0) { color = [0, 0, 0, 1]; }
         var _this = _super.call(this) || this;
         _this.color = new Float32Array(4);
+        _this.strokeColor = new Float32Array(4);
         _this.opacity = 1;
         /**
          * When additive blend factor is 1, the blend mode is additive, when 0, it's normal premultiplied alpha blended
@@ -47,6 +48,7 @@ var Text = /** @class */ (function (_super) {
         _this.additiveBlending = 0;
         _this._kerningEnabled = true;
         _this._ligaturesEnabled = true;
+        _this._strokeEnabled = false;
         _this._lineHeight = 1.0;
         _this.vertexCount = 0;
         _this.blendMode = Renderer_1.BlendMode.PREMULTIPLIED_ALPHA;
@@ -104,10 +106,24 @@ var Text = /** @class */ (function (_super) {
         enumerable: true,
         configurable: true
     });
+    Object.defineProperty(Text.prototype, "strokeEnabled", {
+        get: function () {
+            return this._strokeEnabled;
+        },
+        set: function (v) {
+            var changed = v !== this._strokeEnabled;
+            this._strokeEnabled = v;
+            if (changed) {
+                this.gpuResourcesNeedAllocate = true;
+            }
+        },
+        enumerable: true,
+        configurable: true
+    });
     Text.prototype.allocateGPUResources = function (device) {
         var programNeedsUpdate = false;
         if (this.gpuProgram == null || programNeedsUpdate) {
-            this.gpuProgram = SharedResources_1.SharedResources.getProgram(device, "\n                #version 100\n\n                precision mediump float;\n\n                attribute vec2 position;\n                attribute vec3 uv;\n\n                uniform mat4 transform;\n                uniform float fieldRange;\n                uniform vec2 viewportSize;\n                uniform float glyphScale;\n\n                varying vec2 vUv;\n                varying float vFieldRangeDisplay_px;\n\n                void main() {\n                    vUv = uv.xy;\n\n                    // determine the field range in pixels when drawn to the framebuffer\n                    vec2 scale = abs(vec2(transform[0][0], transform[1][1])) * glyphScale;\n                    float atlasScale = uv.z;\n                    vFieldRangeDisplay_px = fieldRange * scale.y * (viewportSize.y * 0.5) / atlasScale;\n                    vFieldRangeDisplay_px = max(vFieldRangeDisplay_px, 1.0);\n\n                    // flip-y axis\n                    gl_Position = transform * vec4(vec2(position.x, -position.y) * glyphScale, 0.0, 1.0);\n                }\n                ", "\n                #version 100\n\n                precision mediump float;\n\n                uniform vec4 color;\n                uniform float blendFactor;\n\n                uniform sampler2D glyphAtlas;\n                uniform mat4 transform;\n\n                varying vec2 vUv;\n                varying float vFieldRangeDisplay_px;\n\n                float median(float r, float g, float b) {\n                    return max(min(r, g), min(max(r, g), b));\n                }\n\n                void main() {\n                    vec3 sample = texture2D(glyphAtlas, vUv).rgb;\n\n                    float sigDist = median(sample.r, sample.g, sample.b);\n\n                    // spread field range over 1px for antialiasing\n                    sigDist = clamp((sigDist - 0.5) * vFieldRangeDisplay_px + 0.5, 0.0, 1.0);\n\n                    float alpha = sigDist;\n\n                    gl_FragColor = vec4(color.rgb, blendFactor) * color.a * alpha;\n                }\n                ", Text.attributeLayout);
+            this.gpuProgram = SharedResources_1.SharedResources.getProgram(device, "\n                #version 100\n\n                precision mediump float;\n\n                attribute vec2 position;\n                attribute vec3 uv;\n\n                uniform mat4 transform;\n                uniform float fieldRange;\n                uniform vec2 viewportSize;\n                uniform float glyphScale;\n\n                varying vec2 vUv;\n                varying float vFieldRangeDisplay_px;\n\n                void main() {\n                    vUv = uv.xy;\n\n                    // determine the field range in pixels when drawn to the framebuffer\n                    vec2 scale = abs(vec2(transform[0][0], transform[1][1])) * glyphScale;\n                    float atlasScale = uv.z;\n                    vFieldRangeDisplay_px = fieldRange * scale.y * (viewportSize.y * 0.5) / atlasScale;\n                    vFieldRangeDisplay_px = max(vFieldRangeDisplay_px, 1.0);\n\n                    // flip-y axis\n                    gl_Position = transform * vec4(vec2(position.x, -position.y) * glyphScale, 0.0, 1.0);\n                }\n                ", "\n                #version 100\n\n                precision mediump float;\n\n                uniform vec4 color;\n                " + (this._strokeEnabled ? "uniform vec4 strokeColor;" : "") + "\n                uniform float blendFactor;\n\n                uniform sampler2D glyphAtlas;\n                uniform mat4 transform;\n\n                varying vec2 vUv;\n                varying float vFieldRangeDisplay_px;\n\n                float median(float r, float g, float b) {\n                    return max(min(r, g), min(max(r, g), b));\n                }\n\n                void main() {\n                    vec3 sample = texture2D(glyphAtlas, vUv).rgb;\n\n                    float sigDist = median(sample.r, sample.g, sample.b);\n\n                    // spread field range over 1px for antialiasing\n                    float alpha = clamp((sigDist - 0.5) * vFieldRangeDisplay_px + 0.5, 0.0, 1.0);\n                    gl_FragColor = vec4(color.rgb, blendFactor) * color.a * alpha;\n\n                    " + (this.strokeEnabled ? "\n                    float strokeWidthPx = 1.0;\n                    float strokeDistThreshold = clamp(strokeWidthPx * 2. / vFieldRangeDisplay_px, 0.0, 1.0);\n                    float strokeDistScale = 1. / (1.0 - strokeDistThreshold);\n                    float _offset = 0.5 / strokeDistScale;\n                    float strokeAlpha = clamp((sigDist - _offset) * vFieldRangeDisplay_px + _offset, 0.0, 1.0);\n\n                    gl_FragColor += vec4(strokeColor.rgb, blendFactor) * strokeColor.a * strokeAlpha * (1.0 - fillAlpha);\n                    " : "") + "\n                }\n                ", Text.attributeLayout);
         }
         // initialize atlas texture if not already created
         var textureKey = this._fontAsset.descriptor.metadata.postScriptName;
@@ -183,6 +199,9 @@ var Text = /** @class */ (function (_super) {
         // text instance
         context.uniform1f('glyphScale', this._glyphLayout.glyphScale);
         context.uniform4f('color', this.color[0], this.color[1], this.color[2], this.color[3] * this.opacity);
+        if (this.strokeEnabled) {
+            context.uniform4f('strokeColor', this.strokeColor[0], this.strokeColor[1], this.strokeColor[2], this.strokeColor[3] * this.opacity);
+        }
         context.uniform1f('blendFactor', 1.0 - this.additiveBlending);
         context.uniformMatrix4fv('transform', false, this.worldTransformMat4);
         context.draw(Renderer_1.DrawMode.TRIANGLES, this.vertexCount, 0);
