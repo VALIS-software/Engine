@@ -37,12 +37,14 @@ export class GPUDevice {
 		availableTextureUnits: number,
 		floatTextures: boolean,
 		floatTexturesLinearFiltering: boolean,
+		standardDerivatives: boolean,
 	} = {
 		vertexArrayObjects: false,
 		instancing: false,
 		availableTextureUnits: 0,
 		floatTextures: false,
 		floatTexturesLinearFiltering: false,
+		standardDerivatives: false,
 	}
 
 	readonly name: string;
@@ -93,6 +95,7 @@ export class GPUDevice {
 
 		this.capabilities.floatTextures = gl.getExtension('OES_texture_float') != null;
 		this.capabilities.floatTexturesLinearFiltering = gl.getExtension('OES_texture_float_linear') != null;
+		this.capabilities.standardDerivatives = gl.getExtension('OES_standard_derivatives') != null;
 	}
 
 	createBuffer(bufferDescriptor: BufferDescriptor) {

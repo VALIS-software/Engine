@@ -32,6 +32,7 @@ export declare class GPUDevice {
         availableTextureUnits: number;
         floatTextures: boolean;
         floatTexturesLinearFiltering: boolean;
+        standardDerivatives: boolean;
     };
     readonly name: string;
     readonly deviceId: number;

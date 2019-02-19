@@ -37,6 +37,7 @@ var GPUDevice = /** @class */ (function () {
             availableTextureUnits: 0,
             floatTextures: false,
             floatTexturesLinearFiltering: false,
+            standardDerivatives: false,
         };
         this.vertexStateIds = new IdManager(true);
         this.programIds = new IdManager(true);
@@ -62,6 +63,7 @@ var GPUDevice = /** @class */ (function () {
         this.capabilities.availableTextureUnits = availableTextureUnits;
         this.capabilities.floatTextures = gl.getExtension('OES_texture_float') != null;
         this.capabilities.floatTexturesLinearFiltering = gl.getExtension('OES_texture_float_linear') != null;
+        this.capabilities.standardDerivatives = gl.getExtension('OES_standard_derivatives') != null;
     }
     Object.defineProperty(GPUDevice.prototype, "programCount", {
         get: function () { return this._programCount; },
