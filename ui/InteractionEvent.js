@@ -38,6 +38,14 @@ var InteractionEvent = /** @class */ (function () {
         this.height = init.height;
         this.tiltX = init.tiltX;
         this.tiltY = init.tiltY;
+        // copy internal fields should they exist on init
+        // this is so we can clone InteractionEvents
+        if (init.defaultPrevented !== undefined) {
+            this.defaultPrevented = init.defaultPrevented;
+        }
+        if (init.propagationStopped !== undefined) {
+            this.propagationStopped = init.propagationStopped;
+        }
     }
     InteractionEvent.prototype.preventDefault = function () {
         this.defaultPrevented = true;

@@ -57,7 +57,7 @@ export interface InteractionEventInit {
     tiltY: number;
 }
 
-export class InteractionEvent {
+export class InteractionEvent implements InteractionEventInit {
 
     protected defaultPrevented = false;
     protected propagationStopped = false;
@@ -92,7 +92,7 @@ export class InteractionEvent {
     readonly tiltX: number;
     readonly tiltY: number;
 
-    constructor(init: InteractionEventInit, protected readonly sourceEvent: Event) {
+    constructor(init: InteractionEventInit | InteractionEvent, protected readonly sourceEvent: Event) {
         this.target = init.target;
         this.worldX = init.worldX;
         this.worldY = init.worldY;
@@ -117,6 +117,15 @@ export class InteractionEvent {
         this.height = init.height;
         this.tiltX = init.tiltX;
         this.tiltY = init.tiltY;
+
+        // copy internal fields should they exist on init
+        // this is so we can clone InteractionEvents
+        if ( (init as any).defaultPrevented !== undefined ) {
+            this.defaultPrevented = (init as any).defaultPrevented;
+        }
+        if ((init as any).propagationStopped !== undefined) {
+            this.propagationStopped = (init as any).propagationStopped;
+        }
     }
 
     preventDefault() {

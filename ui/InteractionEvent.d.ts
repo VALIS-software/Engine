@@ -45,7 +45,7 @@ export interface InteractionEventInit {
     tiltX: number;
     tiltY: number;
 }
-export declare class InteractionEvent {
+export declare class InteractionEvent implements InteractionEventInit {
     protected readonly sourceEvent: Event;
     protected defaultPrevented: boolean;
     protected propagationStopped: boolean;
@@ -72,7 +72,7 @@ export declare class InteractionEvent {
     readonly height: number;
     readonly tiltX: number;
     readonly tiltY: number;
-    constructor(init: InteractionEventInit, sourceEvent: Event);
+    constructor(init: InteractionEventInit | InteractionEvent, sourceEvent: Event);
     preventDefault(): void;
     stopPropagation(): void;
 }
